@@ -5,6 +5,7 @@
 
 namespace GAME {
 
+    const int FRAME_RATE = 1000 / 60;
     const int SCREEN_WIDTH = 640;
     const int SCREEN_HEIGHT = 640;
     const int GRID_WIDTH = 32;
@@ -43,6 +44,9 @@ namespace GAME {
         //Spawn fruit and check did it spawn in a snake
         void spawnFruit();
 
+        //Update window title
+        void upDateWindowTitle();
+
         //Check pressed key and change directory
         void clickHandler();
 
@@ -64,13 +68,14 @@ namespace GAME {
     private:
         int moveX_;
         int moveY_;
-        bool isPlaying_;
+        bool is_playing_;
         int score_;
         int length_;
         int tailX_[COUNT_OF_GRID];
         int tailY_[COUNT_OF_GRID];
         int fruitX_;
         int fruitY_;
+        int fps_;
         Direction dir_;
         SDL_Window *window_ = nullptr;
         SDL_Renderer *renderer_ = nullptr;

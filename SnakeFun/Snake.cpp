@@ -7,7 +7,7 @@ Snake::Snake() {
 }
 
 void Snake::start() {
-    isPlaying_ = true;
+    is_playing_ = true;
     defaultSnake();
     initializeSDL();
 }
@@ -39,13 +39,13 @@ void Snake::spawnFruit() {
 void Snake::initializeSDL() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        isPlaying_ = false;
+        is_playing_ = false;
     } else {
         window_ = SDL_CreateWindow("Snake The Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                    SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if (window_ == nullptr) {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-            isPlaying_ = false;
+            is_playing_ = false;
         } else {
             game();
         }
@@ -62,7 +62,17 @@ void Snake::initializeSDL() {
 
 void Snake::game() {
     renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
-    while (isPlaying_) {
+
+    Uint32 before, second = SDL_GetTicks(), after;
+    int frame_time, frames = 0;
+
+    while (is_playing_) {
+
+        clickHandler();
+        changeDirection();
+
+        before = SDL_GetTicks();
+
         //Draw all elements of a map
         draw();
 
@@ -79,41 +89,57 @@ void Snake::game() {
         //If snake hit the tail
         plungingCheck();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        frames++;
+        after = SDL_GetTicks();
+        frame_time = after - before;
+
+        if (after - second >= 1000) {
+            fps_ = frames;
+            frames = 0;
+            second = after;
+            upDateWindowTitle();
+        }
+
+        if (FRAME_RATE > frame_time) {
+            SDL_Delay(FRAME_RATE - frame_time);
+            std::this_thread::sleep_for(std::chrono::milliseconds(25));
+        }
     }
+}
+
+void Snake::upDateWindowTitle() {
+    std::string title = "Snake The Game. Score: " + std::to_string(score_) + " FPS: " + std::to_string(fps_);
+    SDL_SetWindowTitle(window_, title.c_str());
 }
 
 void Snake::draw() {
     SDL_Color color;
     SDL_Rect rect;
 
-    if (SDL_PollEvent(&event_)) {
-        clickHandler();
-        changeDirection();
-    }
-
     SDL_SetRenderDrawColor(renderer_, 0x63, 0x63, 0x63, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer_);
 
-    for (size_t X = 0; X < SCREEN_WIDTH; X += GRID_WIDTH) {
-        SDL_SetRenderDrawColor(renderer_, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);
-        SDL_RenderDrawLine(renderer_, X, 0, X, SCREEN_HEIGHT);
-        SDL_RenderPresent(renderer_);
-
-    }
-
-    for (size_t Y = 0; Y < SCREEN_HEIGHT; Y += GRID_HEIGHT) {
-        SDL_SetRenderDrawColor(renderer_, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);
-        SDL_RenderDrawLine(renderer_, 0, Y, SCREEN_WIDTH, Y);
-        SDL_RenderPresent(renderer_);
-
-    }
+//    for (int X = 0; X < SCREEN_WIDTH; X += GRID_WIDTH) {
+//        SDL_SetRenderDrawColor(renderer_, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);
+//        SDL_RenderDrawLine(renderer_, X, 0, X, SCREEN_HEIGHT);
+//        SDL_RenderPresent(renderer_);
+//
+//    }
+//
+//    for (int Y = 0; Y < SCREEN_HEIGHT; Y += GRID_HEIGHT) {
+//        SDL_SetRenderDrawColor(renderer_, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);
+//        SDL_RenderDrawLine(renderer_, 0, Y, SCREEN_WIDTH, Y);
+//        SDL_RenderPresent(renderer_);
+//
+//    }
 
     for (size_t i = 0; i < length_; i++) {
         if (i == 0)
             color = {0xFF, 0x00, 0x00};
-        else
+        else if (i % 2 == 1)
             color = {0xFF, 0xFF, 0xFF};
+        else if (i % 2 == 0)
+            color = {0x00, 0x00, 0x00};
         rect = {tailX_[i] * GRID_WIDTH, tailY_[i] * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
         SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
         SDL_RenderFillRect(renderer_, &rect);
@@ -128,30 +154,32 @@ void Snake::draw() {
 }
 
 void Snake::clickHandler() {
-    switch (event_.type) {
-        case SDL_KEYDOWN:
-            switch (event_.key.keysym.sym) {
-                case SDLK_LEFT:
-                    dir_ != Direction::RIGHT_DIRECTION ? dir_ = LEFT_DIRECTION : dir_ = RIGHT_DIRECTION;
-                    break;
-                case SDLK_RIGHT:
-                    dir_ != Direction::LEFT_DIRECTION ? dir_ = RIGHT_DIRECTION : dir_ = LEFT_DIRECTION;
-                    break;
-                case SDLK_UP:
-                    dir_ != Direction::DOWN_DIRECTION ? dir_ = UP_DIRECTION : dir_ = DOWN_DIRECTION;
-                    break;
-                case SDLK_DOWN:
-                    dir_ != Direction::UP_DIRECTION ? dir_ = DOWN_DIRECTION : dir_ = UP_DIRECTION;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case SDL_QUIT:
-            isPlaying_ = false;
-            break;
-        default:
-            break;
+    while (SDL_PollEvent(&event_)) {
+        switch (event_.type) {
+            case SDL_KEYDOWN:
+                switch (event_.key.keysym.sym) {
+                    case SDLK_LEFT:
+                        dir_ != Direction::RIGHT_DIRECTION ? dir_ = LEFT_DIRECTION : dir_ = RIGHT_DIRECTION;
+                        break;
+                    case SDLK_RIGHT:
+                        dir_ != Direction::LEFT_DIRECTION ? dir_ = RIGHT_DIRECTION : dir_ = LEFT_DIRECTION;
+                        break;
+                    case SDLK_UP:
+                        dir_ != Direction::DOWN_DIRECTION ? dir_ = UP_DIRECTION : dir_ = DOWN_DIRECTION;
+                        break;
+                    case SDLK_DOWN:
+                        dir_ != Direction::UP_DIRECTION ? dir_ = DOWN_DIRECTION : dir_ = UP_DIRECTION;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case SDL_QUIT:
+                is_playing_ = false;
+                break;
+            default:
+                break;
+        }
     }
 }
 
