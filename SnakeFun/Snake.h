@@ -1,6 +1,7 @@
 #include <random>
 #include <conio.h>
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <thread>
 
 namespace GAME {
@@ -24,6 +25,8 @@ namespace GAME {
 
     class Snake {
     public:
+        friend class game;
+
         //Constructor with srand() providing a working random
         Snake();
 
@@ -67,8 +70,8 @@ namespace GAME {
         void plungingCheck();
 
     private:
-        float moveX_;
-        float moveY_;
+        int moveX_;
+        int moveY_;
         bool is_playing_;
         int score_;
         int length_;
@@ -78,8 +81,11 @@ namespace GAME {
         int blockY_[4];
         int fruitX_;
         int fruitY_;
+        int big_fruitX_;
+        int big_fruitY_;
         int fps_;
         Direction dir_;
+        Mix_Music *music_ = nullptr;
         SDL_Window *window_ = nullptr;
         SDL_Renderer *renderer_ = nullptr;
     };

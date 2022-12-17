@@ -50,7 +50,7 @@ void Snake::spawnFruit() {
 }
 
 void Snake::initializeSDL() {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         is_playing_ = false;
     } else {
@@ -61,9 +61,29 @@ void Snake::initializeSDL() {
             is_playing_ = false;
         } else {
             renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
+
+            if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+                printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+                is_playing_ = false;
+            }
+
+            music_ = Mix_LoadMUS("shrek.wav");
+            if (music_ == nullptr) {
+                printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
+                is_playing_ = false;
+            }
+
+            if (Mix_PlayingMusic() == 0) {
+                Mix_PlayMusic(music_, -1);
+                Mix_VolumeMusic(5);
+            }
+
             game();
         }
     }
+
+    Mix_FreeMusic(music_);
+    music_ = nullptr;
 
     SDL_DestroyRenderer(renderer_);
     renderer_ = nullptr;
@@ -147,7 +167,7 @@ void Snake::draw() {
 
 void Snake::clickHandler() {
     SDL_Event event_;
-    while (SDL_PollEvent(&event_)) {
+    if (SDL_PollEvent(&event_)) {
         switch (event_.type) {
             case SDL_KEYDOWN:
                 switch (event_.key.keysym.sym) {
@@ -173,27 +193,28 @@ void Snake::clickHandler() {
             default:
                 break;
         }
+        changeDirection();
     }
-    changeDirection();
 }
+
 
 void Snake::changeDirection() {
     switch (dir_) {
         case LEFT_DIRECTION:
-            moveX_ = -1.0f;
+            moveX_ = -1;
             moveY_ = 0;
             break;
         case RIGHT_DIRECTION:
-            moveX_ = 1.0f;
+            moveX_ = 1;
             moveY_ = 0;
             break;
         case UP_DIRECTION:
             moveX_ = 0;
-            moveY_ = -1.0f;
+            moveY_ = -1;
             break;
         case DOWN_DIRECTION:
             moveX_ = 0;
-            moveY_ = 1.0f;
+            moveY_ = 1;
             break;
         default:
             break;
@@ -252,6 +273,5 @@ void Snake::plungingCheck() {
     for (size_t i = 1; i < length_; i++) {
         if (tailX_[0] == tailX_[i] && tailY_[0] == tailY_[i])
             defaultSnake();
-
     }
 }
