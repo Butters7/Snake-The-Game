@@ -13,23 +13,36 @@ void Snake::start() {
 }
 
 void Snake::defaultSnake() {
+    length_ = 3;
     moveX_ = 0;
     moveY_ = 0;
-    length_ = 3;
     score_ = 0;
     tailX_[0] = RECT_X / 2;
     tailY_[0] = RECT_Y / 2;
+    fruitX_ = RECT_X / 2 + 5;
+    fruitY_ = (RECT_Y / 2) - 5;
+    blockX_[0] = RECT_X / 2 - 7;
+    blockX_[1] = RECT_X / 2 - 7;
+    blockX_[2] = RECT_X / 2 - 6;
+    blockX_[3] = RECT_X / 2 - 8;
+    blockY_[0] = RECT_Y / 2 - 14;
+    blockY_[1] = RECT_Y / 2 - 12;
+    blockY_[2] = RECT_Y / 2 - 13;
+    blockY_[3] = RECT_Y / 2 - 13;
     for (size_t i = 1; i < length_; i++) {
         tailX_[i] = tailX_[i - 1] - 1;
         tailY_[i] = tailY_[i - 1];
     }
-    spawnFruit();
 }
 
 void Snake::spawnFruit() {
     here:
     fruitX_ = rand() % RECT_X;
     fruitY_ = rand() % RECT_Y;
+    for (size_t i = 0; i < 4; i++) {
+        if ((fruitY_ == blockY_[i] && fruitX_ == blockX_[i]) || (fruitX_ == 7 && fruitY_ == 13))
+            goto here;
+    }
     for (size_t i = 1; i < length_; i++) {
         if (fruitY_ == tailY_[i] && fruitX_ == tailX_[i])
             goto here;
@@ -41,12 +54,13 @@ void Snake::initializeSDL() {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         is_playing_ = false;
     } else {
-        window_ = SDL_CreateWindow("Snake The Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        window_ = SDL_CreateWindow("Snake", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                    SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if (window_ == nullptr) {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
             is_playing_ = false;
         } else {
+            renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
             game();
         }
     }
@@ -61,33 +75,21 @@ void Snake::initializeSDL() {
 }
 
 void Snake::game() {
-    renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
 
     Uint32 before, second = SDL_GetTicks(), after;
     int frame_time, frames = 0;
 
     while (is_playing_) {
-
-        clickHandler();
-        changeDirection();
-
         before = SDL_GetTicks();
+
+        //Click Handler
+        clickHandler();
+
+        //Moving our snake
+        moving();
 
         //Draw all elements of a map
         draw();
-
-        //Moving our snake
-        if (moveX_ != 0 || moveY_ != 0) {
-            moving();
-        }
-
-        //If snake ate a food
-        if (tailX_[0] == fruitX_ && tailY_[0] == fruitY_) {
-            eatingProcess();
-        }
-
-        //If snake hit the tail
-        plungingCheck();
 
         frames++;
         after = SDL_GetTicks();
@@ -102,13 +104,13 @@ void Snake::game() {
 
         if (FRAME_RATE > frame_time) {
             SDL_Delay(FRAME_RATE - frame_time);
-            std::this_thread::sleep_for(std::chrono::milliseconds(25));
         }
     }
+
 }
 
 void Snake::upDateWindowTitle() {
-    std::string title = "Snake The Game. Score: " + std::to_string(score_) + " FPS: " + std::to_string(fps_);
+    std::string title = "Snake. Score: " + std::to_string(score_) + " FPS: " + std::to_string(fps_);
     SDL_SetWindowTitle(window_, title.c_str());
 }
 
@@ -119,34 +121,24 @@ void Snake::draw() {
     SDL_SetRenderDrawColor(renderer_, 0x63, 0x63, 0x63, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer_);
 
-//    for (int X = 0; X < SCREEN_WIDTH; X += GRID_WIDTH) {
-//        SDL_SetRenderDrawColor(renderer_, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);
-//        SDL_RenderDrawLine(renderer_, X, 0, X, SCREEN_HEIGHT);
-//        SDL_RenderPresent(renderer_);
-//
-//    }
-//
-//    for (int Y = 0; Y < SCREEN_HEIGHT; Y += GRID_HEIGHT) {
-//        SDL_SetRenderDrawColor(renderer_, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);
-//        SDL_RenderDrawLine(renderer_, 0, Y, SCREEN_WIDTH, Y);
-//        SDL_RenderPresent(renderer_);
-//
-//    }
-
     for (size_t i = 0; i < length_; i++) {
         if (i == 0)
-            color = {0xFF, 0x00, 0x00};
-        else if (i % 2 == 1)
+            color = {0x00, 0x00, 0xFF};
+        else
             color = {0xFF, 0xFF, 0xFF};
-        else if (i % 2 == 0)
-            color = {0x00, 0x00, 0x00};
         rect = {tailX_[i] * GRID_WIDTH, tailY_[i] * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
         SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
         SDL_RenderFillRect(renderer_, &rect);
-        SDL_RenderPresent(renderer_);
     }
 
-    color = {0x00, 0xFF, 0x00};
+    for (size_t i = 0; i < 4; i++) {
+        color = {0x00, 0x00, 0x00};
+        rect = {blockX_[i] * GRID_WIDTH, blockY_[i] * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
+        SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+        SDL_RenderFillRect(renderer_, &rect);
+    }
+
+    color = {0xFF, 0xFF, 0x00};
     rect = {fruitX_ * GRID_WIDTH, fruitY_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
     SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(renderer_, &rect);
@@ -154,6 +146,7 @@ void Snake::draw() {
 }
 
 void Snake::clickHandler() {
+    SDL_Event event_;
     while (SDL_PollEvent(&event_)) {
         switch (event_.type) {
             case SDL_KEYDOWN:
@@ -181,25 +174,26 @@ void Snake::clickHandler() {
                 break;
         }
     }
+    changeDirection();
 }
 
 void Snake::changeDirection() {
     switch (dir_) {
         case LEFT_DIRECTION:
-            moveX_ = -1;
+            moveX_ = -1.0f;
             moveY_ = 0;
             break;
         case RIGHT_DIRECTION:
-            moveX_ = 1;
+            moveX_ = 1.0f;
             moveY_ = 0;
             break;
         case UP_DIRECTION:
             moveX_ = 0;
-            moveY_ = -1;
+            moveY_ = -1.0f;
             break;
         case DOWN_DIRECTION:
             moveX_ = 0;
-            moveY_ = 1;
+            moveY_ = 1.0f;
             break;
         default:
             break;
@@ -220,6 +214,12 @@ void Snake::moving() {
         prevX = prev2X;
         prevY = prev2Y;
     }
+
+    //If snake hit the tail
+    plungingCheck();
+
+    //If snake ate a food
+    eatingProcess();
 }
 
 void Snake::endProcess() {
@@ -235,16 +235,23 @@ void Snake::endProcess() {
 }
 
 void Snake::eatingProcess() {
-    spawnFruit();
-    score_++;
-    length_++;
-    tailX_[length_ - 1] = tailX_[length_ - 2] - std::abs(moveX_);
-    tailY_[length_ - 1] = tailY_[length_ - 2] - std::abs(moveY_);
+    if (tailX_[0] == fruitX_ && tailY_[0] == fruitY_) {
+        spawnFruit();
+        score_++;
+        length_++;
+        tailX_[length_ - 1] = tailX_[length_ - 2] - std::abs(moveX_);
+        tailY_[length_ - 1] = tailY_[length_ - 2] - std::abs(moveY_);
+    }
 }
 
 void Snake::plungingCheck() {
+    for (size_t i = 0; i < 4; i++) {
+        if (tailX_[0] == blockX_[i] && tailY_[0] == blockY_[i])
+            defaultSnake();
+    }
     for (size_t i = 1; i < length_; i++) {
         if (tailX_[0] == tailX_[i] && tailY_[0] == tailY_[i])
             defaultSnake();
+
     }
 }

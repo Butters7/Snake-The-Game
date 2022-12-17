@@ -5,11 +5,12 @@
 
 namespace GAME {
 
-    const int FRAME_RATE = 1000 / 60;
+    const int SPEED = 20;
+    const int FRAME_RATE = 1000 / SPEED;
     const int SCREEN_WIDTH = 640;
     const int SCREEN_HEIGHT = 640;
-    const int GRID_WIDTH = 32;
-    const int GRID_HEIGHT = 32;
+    const int GRID_WIDTH = 20;
+    const int GRID_HEIGHT = 20;
     const int RECT_X = SCREEN_WIDTH / GRID_WIDTH;
     const int RECT_Y = SCREEN_HEIGHT / GRID_HEIGHT;
     const int COUNT_OF_GRID = RECT_X * RECT_Y;
@@ -66,19 +67,20 @@ namespace GAME {
         void plungingCheck();
 
     private:
-        int moveX_;
-        int moveY_;
+        float moveX_;
+        float moveY_;
         bool is_playing_;
         int score_;
         int length_;
         int tailX_[COUNT_OF_GRID];
         int tailY_[COUNT_OF_GRID];
+        int blockX_[4];
+        int blockY_[4];
         int fruitX_;
         int fruitY_;
         int fps_;
         Direction dir_;
         SDL_Window *window_ = nullptr;
         SDL_Renderer *renderer_ = nullptr;
-        SDL_Event event_;
     };
 }
