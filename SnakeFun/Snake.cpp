@@ -1,7 +1,5 @@
 #include "Snake.h"
 
-using namespace GAME;
-
 Snake::Snake() {
     srand(time(0));
 }
@@ -13,9 +11,8 @@ void Snake::start() {
 }
 
 void Snake::defaultSnake() {
+    dir_ = STOP_DIRECTION;
     length_ = 3;
-    moveX_ = 0;
-    moveY_ = 0;
     score_ = 0;
     tailX_[0] = RECT_X / 2;
     tailY_[0] = RECT_Y / 2;
@@ -25,10 +22,12 @@ void Snake::defaultSnake() {
     blockX_[1] = RECT_X / 2 - 7;
     blockX_[2] = RECT_X / 2 - 6;
     blockX_[3] = RECT_X / 2 - 8;
+    blockX_[4] = RECT_X / 2 - 7;
     blockY_[0] = RECT_Y / 2 - 14;
     blockY_[1] = RECT_Y / 2 - 12;
     blockY_[2] = RECT_Y / 2 - 13;
     blockY_[3] = RECT_Y / 2 - 13;
+    blockY_[4] = RECT_Y / 2 - 13;
     for (size_t i = 1; i < length_; i++) {
         tailX_[i] = tailX_[i - 1] - 1;
         tailY_[i] = tailY_[i - 1];
@@ -40,7 +39,7 @@ void Snake::spawnFruit() {
     fruitX_ = rand() % RECT_X;
     fruitY_ = rand() % RECT_Y;
     for (size_t i = 0; i < 4; i++) {
-        if ((fruitY_ == blockY_[i] && fruitX_ == blockX_[i]) || (fruitX_ == 7 && fruitY_ == 13))
+        if (fruitY_ == blockY_[i] && fruitX_ == blockX_[i])
             goto here;
     }
     for (size_t i = 1; i < length_; i++) {
@@ -67,7 +66,7 @@ void Snake::initializeSDL() {
                 is_playing_ = false;
             }
 
-            music_ = Mix_LoadMUS("shrek.wav");
+            music_ = Mix_LoadMUS("song.wav");
             if (music_ == nullptr) {
                 printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
                 is_playing_ = false;
@@ -75,7 +74,7 @@ void Snake::initializeSDL() {
 
             if (Mix_PlayingMusic() == 0) {
                 Mix_PlayMusic(music_, -1);
-                Mix_VolumeMusic(5);
+                Mix_VolumeMusic(3);
             }
 
             game();
@@ -151,7 +150,7 @@ void Snake::draw() {
         SDL_RenderFillRect(renderer_, &rect);
     }
 
-    for (size_t i = 0; i < 4; i++) {
+    for (size_t i = 0; i < 5; i++) {
         color = {0x00, 0x00, 0x00};
         rect = {blockX_[i] * GRID_WIDTH, blockY_[i] * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
         SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
@@ -216,31 +215,36 @@ void Snake::changeDirection() {
             moveX_ = 0;
             moveY_ = 1;
             break;
+        case STOP_DIRECTION:
+            moveX_ = 0;
+            moveY_ = 0;
         default:
             break;
     }
 }
 
 void Snake::moving() {
-    int prevX = tailX_[0];
-    int prevY = tailY_[0];
-    tailX_[0] += moveX_;
-    tailY_[0] += moveY_;
-    endProcess();
-    for (size_t i = 1; i < length_; i++) {
-        int prev2X = tailX_[i];
-        int prev2Y = tailY_[i];
-        tailX_[i] = prevX;
-        tailY_[i] = prevY;
-        prevX = prev2X;
-        prevY = prev2Y;
+    if (moveX_ != 0 || moveY_ != 0) {
+        int prevX = tailX_[0];
+        int prevY = tailY_[0];
+        tailX_[0] += moveX_;
+        tailY_[0] += moveY_;
+        endProcess();
+        for (size_t i = 1; i < length_; i++) {
+            int prev2X = tailX_[i];
+            int prev2Y = tailY_[i];
+            tailX_[i] = prevX;
+            tailY_[i] = prevY;
+            prevX = prev2X;
+            prevY = prev2Y;
+        }
+
+        //If snake hit the tail
+        plungingCheck();
+
+        //If snake ate a food
+        eatingProcess();
     }
-
-    //If snake hit the tail
-    plungingCheck();
-
-    //If snake ate a food
-    eatingProcess();
 }
 
 void Snake::endProcess() {
@@ -267,11 +271,27 @@ void Snake::eatingProcess() {
 
 void Snake::plungingCheck() {
     for (size_t i = 0; i < 4; i++) {
-        if (tailX_[0] == blockX_[i] && tailY_[0] == blockY_[i])
+        if (tailX_[0] == blockX_[i] && tailY_[0] == blockY_[i]) {
+            drawHeadSnake();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
             defaultSnake();
+        }
     }
     for (size_t i = 1; i < length_; i++) {
-        if (tailX_[0] == tailX_[i] && tailY_[0] == tailY_[i])
+        if (tailX_[0] == tailX_[i] && tailY_[0] == tailY_[i]) {
+            drawHeadSnake();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
             defaultSnake();
+        }
     }
+}
+
+void Snake::drawHeadSnake() {
+    SDL_Color color;
+    SDL_Rect rect;
+    color = {0xFF, 0x00, 0x00};
+    rect = {tailX_[0] * GRID_WIDTH, tailY_[0] * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
+    SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(renderer_, &rect);
+    SDL_RenderPresent(renderer_);
 }
