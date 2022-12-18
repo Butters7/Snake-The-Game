@@ -8,9 +8,12 @@ void Snake::start() {
     is_playing_ = true;
     defaultSnake();
     initializeSDL();
+    game();
+    quit();
 }
 
 void Snake::defaultSnake() {
+    SDL_QuitEvent(event_);
     dir_ = STOP_DIRECTION;
     length_ = 3;
     score_ = 0;
@@ -32,6 +35,39 @@ void Snake::defaultSnake() {
         tailX_[i] = tailX_[i - 1] - 1;
         tailY_[i] = tailY_[i - 1];
     }
+
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        is_playing_ = false;
+    } else {
+        if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+            printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+            is_playing_ = false;
+        }
+
+        music_ = Mix_LoadMUS("song.wav");
+        if (music_ == nullptr) {
+            printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
+            is_playing_ = false;
+        }
+
+        eating_ = Mix_LoadWAV("eat.wav");
+        if (eating_ == nullptr) {
+            printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+            is_playing_ = false;
+        }
+
+        lose_ = Mix_LoadWAV("lose.wav");
+        if (lose_ == nullptr) {
+            printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+            is_playing_ = false;
+        } else { Mix_VolumeChunk(lose_, 7); }
+
+        if (Mix_PlayingMusic() == 0) {
+            Mix_PlayMusic(music_, -1);
+            Mix_VolumeMusic(3);
+        }
+    }
 }
 
 void Snake::spawnFruit() {
@@ -49,7 +85,7 @@ void Snake::spawnFruit() {
 }
 
 void Snake::initializeSDL() {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         is_playing_ = false;
     } else {
@@ -60,29 +96,19 @@ void Snake::initializeSDL() {
             is_playing_ = false;
         } else {
             renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
-
-            if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-                printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
-                is_playing_ = false;
-            }
-
-            music_ = Mix_LoadMUS("song.wav");
-            if (music_ == nullptr) {
-                printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
-                is_playing_ = false;
-            }
-
-            if (Mix_PlayingMusic() == 0) {
-                Mix_PlayMusic(music_, -1);
-                Mix_VolumeMusic(3);
-            }
-
-            game();
         }
     }
+}
 
+void Snake::quit() {
     Mix_FreeMusic(music_);
     music_ = nullptr;
+
+    Mix_FreeChunk(lose_);
+    lose_ = nullptr;
+
+    Mix_FreeChunk(eating_);
+    eating_ = nullptr;
 
     SDL_DestroyRenderer(renderer_);
     renderer_ = nullptr;
@@ -90,6 +116,7 @@ void Snake::initializeSDL() {
     SDL_DestroyWindow(window_);
     window_ = nullptr;
 
+    Mix_Quit();
     SDL_Quit();
 }
 
@@ -165,22 +192,24 @@ void Snake::draw() {
 }
 
 void Snake::clickHandler() {
-    SDL_Event event_;
-    if (SDL_PollEvent(&event_)) {
+    while (SDL_PollEvent(&event_)) {
         switch (event_.type) {
             case SDL_KEYDOWN:
                 switch (event_.key.keysym.sym) {
                     case SDLK_LEFT:
-                        dir_ != Direction::RIGHT_DIRECTION ? dir_ = LEFT_DIRECTION : dir_ = RIGHT_DIRECTION;
+                        (dir_ != Direction::RIGHT_DIRECTION && dir_ != Direction::STOP_DIRECTION && moveX_ != 1)
+                        ? dir_ = LEFT_DIRECTION : dir_ = RIGHT_DIRECTION;
                         break;
                     case SDLK_RIGHT:
-                        dir_ != Direction::LEFT_DIRECTION ? dir_ = RIGHT_DIRECTION : dir_ = LEFT_DIRECTION;
+                        (dir_ != Direction::LEFT_DIRECTION && moveX_ != -1) ? dir_ = RIGHT_DIRECTION
+                                                                            : dir_ = LEFT_DIRECTION;
                         break;
                     case SDLK_UP:
-                        dir_ != Direction::DOWN_DIRECTION ? dir_ = UP_DIRECTION : dir_ = DOWN_DIRECTION;
+                        (dir_ != Direction::DOWN_DIRECTION && moveY_ != 1) ? dir_ = UP_DIRECTION
+                                                                           : dir_ = DOWN_DIRECTION;
                         break;
                     case SDLK_DOWN:
-                        dir_ != Direction::UP_DIRECTION ? dir_ = DOWN_DIRECTION : dir_ = UP_DIRECTION;
+                        (dir_ != Direction::UP_DIRECTION && moveY_ != -1) ? dir_ = DOWN_DIRECTION : dir_ = UP_DIRECTION;
                         break;
                     default:
                         break;
@@ -192,8 +221,8 @@ void Snake::clickHandler() {
             default:
                 break;
         }
-        changeDirection();
     }
+    changeDirection();
 }
 
 
@@ -261,6 +290,7 @@ void Snake::endProcess() {
 
 void Snake::eatingProcess() {
     if (tailX_[0] == fruitX_ && tailY_[0] == fruitY_) {
+        Mix_PlayChannel(-1, eating_, 0);
         spawnFruit();
         score_++;
         length_++;
@@ -272,26 +302,20 @@ void Snake::eatingProcess() {
 void Snake::plungingCheck() {
     for (size_t i = 0; i < 4; i++) {
         if (tailX_[0] == blockX_[i] && tailY_[0] == blockY_[i]) {
-            drawHeadSnake();
+            Mix_FreeMusic(music_);
+            Mix_PlayChannel(-1, lose_, 0);
+            music_ = nullptr;
             std::this_thread::sleep_for(std::chrono::seconds(1));
             defaultSnake();
         }
     }
     for (size_t i = 1; i < length_; i++) {
         if (tailX_[0] == tailX_[i] && tailY_[0] == tailY_[i]) {
-            drawHeadSnake();
+            Mix_FreeMusic(music_);
+            Mix_PlayChannel(-1, lose_, 0);
+            music_ = nullptr;
             std::this_thread::sleep_for(std::chrono::seconds(1));
             defaultSnake();
         }
     }
-}
-
-void Snake::drawHeadSnake() {
-    SDL_Color color;
-    SDL_Rect rect;
-    color = {0xFF, 0x00, 0x00};
-    rect = {tailX_[0] * GRID_WIDTH, tailY_[0] * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
-    SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
-    SDL_RenderFillRect(renderer_, &rect);
-    SDL_RenderPresent(renderer_);
 }

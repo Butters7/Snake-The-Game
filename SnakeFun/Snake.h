@@ -68,7 +68,7 @@ private:
     //If snake hit the tail restart the game
     void plungingCheck();
 
-    void drawHeadSnake();
+    void quit();
 
 private:
     int moveX_;
@@ -86,7 +86,10 @@ private:
     int big_fruitY_;
     int fps_;
     Direction dir_;
+    SDL_Event event_;
     Mix_Music *music_ = nullptr;
+    Mix_Chunk *eating_ = nullptr;
+    Mix_Chunk *lose_ = nullptr;
     SDL_Window *window_ = nullptr;
     SDL_Renderer *renderer_ = nullptr;
 };
