@@ -1,8 +1,5 @@
-#include <random>
 #include <conio.h>
-#include "SDL.h"
-#include "SDL_mixer.h"
-#include <thread>
+#include <random>
 
 class Game;
 

@@ -1,8 +1,6 @@
 #include "Snake.h"
 
-Snake::Snake() {
-    srand(time(0));
-}
+Snake::Snake() {}
 
 void Snake::defaultSnake() {
     dir_ = STOP_DIRECTION;

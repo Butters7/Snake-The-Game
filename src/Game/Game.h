@@ -1,4 +1,7 @@
+#include "SDL_mixer.h"
 #include "Snake.h"
+#include <thread>
+#include "SDL.h"
 
 class Game {
 public:
