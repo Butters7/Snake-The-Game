@@ -1,0 +1,4 @@
+eat CUSTOMDATA "../Files/eat.wav"
+lose CUSTOMDATA "../Files/lose.wav"
+song CUSTOMDATA "../Files/song.wav"
+icon CUSTOMDATA "../Files/snake.bmp"
