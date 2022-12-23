@@ -8,4 +8,8 @@ static const int GRID_WIDTH = 20;
 static const int GRID_HEIGHT = 20;
 static const int RECT_X = SCREEN_WIDTH / GRID_WIDTH;
 static const int RECT_Y = SCREEN_HEIGHT / GRID_HEIGHT;
-static const int COUNT_OF_GRID = RECT_X * RECT_Y;
+
+struct Point {
+    int x_;
+    int y_;
+};

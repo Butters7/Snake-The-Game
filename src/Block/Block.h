@@ -10,6 +10,5 @@ public:
 
 private:
     Block() {};
-    int x_[5];
-    int y_[5];
+    std::array<Point, 5> ct;
 };

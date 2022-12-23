@@ -3,11 +3,9 @@
 void Snake::defaultSnake(const int &X_, const int &Y_) {
     length_ = 3;
     dir_ = STOP_DIRECTION;
-    tailX_[0] = X_ / 2;
-    tailY_[0] = Y_ / 2;
+    tail[0] = Point{X_, Y_};
     for (size_t i = 1; i < length_; i++) {
-        tailX_[i] = tailX_[i - 1] - 1;
-        tailY_[i] = tailY_[i - 1];
+        tail[i] = Point{tail[i - 1].x_ - 1, tail[i - 1].y_};
     }
 }
 
@@ -39,43 +37,37 @@ void Snake::changeDirection() {
 
 void Snake::moving() {
     if (moveX_ != 0 || moveY_ != 0) {
-        int prevX = tailX_[0];
-        int prevY = tailY_[0];
-        tailX_[0] += moveX_;
-        tailY_[0] += moveY_;
+        Point prev = Point{tail[0].x_, tail[0].y_};
+        tail[0] = Point{prev.x_ + moveX_, prev.y_ + moveY_};
         endProcess();
         for (size_t i = 1; i < length_; i++) {
-            int prev2X = tailX_[i];
-            int prev2Y = tailY_[i];
-            tailX_[i] = prevX;
-            tailY_[i] = prevY;
-            prevX = prev2X;
-            prevY = prev2Y;
+            Point prev2 = Point{tail[i].x_, tail[i].y_};
+            tail[i] = Point{prev.x_, prev.y_};
+            prev = prev2;
         }
     }
 }
 
 void Snake::endProcess() {
-    if (tailX_[0] < 0) {
-        tailX_[0] = RECT_X;
-    } else if (tailX_[0] >= RECT_X) {
-        tailX_[0] = 0;
-    } else if (tailY_[0] < 0) {
-        tailY_[0] = RECT_Y;
-    } else if (tailY_[0] >= RECT_Y) {
-        tailY_[0] = 0;
+    if (tail[0].x_ < 0) {
+        tail[0].x_ = RECT_X;
+    } else if (tail[0].x_ >= RECT_X) {
+        tail[0].x_ = 0;
+    } else if (tail[0].y_ < 0) {
+        tail[0].y_ = RECT_Y;
+    } else if (tail[0].y_ >= RECT_Y) {
+        tail[0].y_ = 0;
     }
 }
 
 void Snake::snakeGrowth() {
     length_++;
-    tailX_[length_ - 1] = tailX_[length_ - 2] - std::abs(moveX_);
-    tailY_[length_ - 1] = tailY_[length_ - 2] - std::abs(moveY_);
+    tail[length_ - 1] = Point{tail[length_ - 2].x_ - std::abs(moveX_), tail[length_ - 2].y_ - std::abs(moveY_)};
 }
 
 bool Snake::plungingTailCheck() {
     for (size_t i = 1; i < length_; i++) {
-        if (tailX_[0] == tailX_[i] && tailY_[0] == tailY_[i]) {
+        if (tail[0].x_ == tail[i].x_ && tail[0].y_ == tail[i].y_) {
             return true;
         }
     }

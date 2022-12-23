@@ -53,7 +53,7 @@ private:
 
     Snake snake1;
     Fruit fruit;
-    Block block1;
+    Block block;
     bool is_playing_;
     int fps_;
     SDL_Event event_;

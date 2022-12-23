@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Consts/Consts.h"
+#include <array>
 #include <cmath>
 
 class Game;
@@ -43,7 +44,6 @@ private:
     int moveX_;
     int moveY_;
     int length_;
-    int tailX_[COUNT_OF_GRID];
-    int tailY_[COUNT_OF_GRID];
+    std::array<Point, 200> tail;
     Direction dir_;
 };

@@ -11,16 +11,11 @@ void Game::start() {
 }
 
 void Game::defaultSettings() {
-    block1.x_[0] = RECT_X / 2 - 7;
-    block1.x_[1] = RECT_X / 2 - 7;
-    block1.x_[2] = RECT_X / 2 - 6;
-    block1.x_[3] = RECT_X / 2 - 8;
-    block1.x_[4] = RECT_X / 2 - 7;
-    block1.y_[0] = RECT_Y / 2 - 14;
-    block1.y_[1] = RECT_Y / 2 - 12;
-    block1.y_[2] = RECT_Y / 2 - 13;
-    block1.y_[3] = RECT_Y / 2 - 13;
-    block1.y_[4] = RECT_Y / 2 - 13;
+    block.ct[0] = Point{RECT_X / 2 - 7, RECT_Y / 2 - 14};
+    block.ct[1] = Point{RECT_X / 2 - 7, RECT_Y / 2 - 12};
+    block.ct[2] = Point{RECT_X / 2 - 6, RECT_Y / 2 - 13};
+    block.ct[3] = Point{RECT_X / 2 - 8, RECT_Y / 2 - 13};
+    block.ct[4] = Point{RECT_X / 2 - 7, RECT_Y / 2 - 13};
     fruit.x_ = RECT_X / 2 + 8;
     fruit.y_ = RECT_Y / 2 - 4;
     snake1.defaultSnake(RECT_X / 2, RECT_Y / 2);
@@ -138,7 +133,7 @@ void Game::game() {
 }
 
 void Game::isEaten() {
-    if (snake1.tailX_[0] == fruit.x_ && snake1.tailY_[0] == fruit.y_) {
+    if (snake1.tail[0].x_ == fruit.x_ && snake1.tail[0].y_ == fruit.y_) {
         snake1.snakeGrowth();
         spawnFruit();
         Mix_PlayChannel(-1, eating_, 0);
@@ -198,14 +193,14 @@ void Game::draw() {
             color = {0x00, 0x00, 0xFF};
         else
             color = {0xFF, 0xFF, 0xFF};
-        rect = {snake1.tailX_[i] * GRID_WIDTH, snake1.tailY_[i] * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
+        rect = {snake1.tail[i].x_ * GRID_WIDTH, snake1.tail[i].y_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
         SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
         SDL_RenderFillRect(renderer_, &rect);
     }
 
     for (size_t i = 0; i < 5; i++) {
         color = {0x00, 0x00, 0x00};
-        rect = {block1.x_[i] * GRID_WIDTH, block1.y_[i] * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
+        rect = {block.ct[i].x_ * GRID_WIDTH, block.ct[i].y_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
         SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
         SDL_RenderFillRect(renderer_, &rect);
     }
@@ -218,14 +213,14 @@ void Game::draw() {
 }
 
 SDL_RWops *Game::rWops(const std::string &name) {
-    HMODULE hModule = NULL;
+    HMODULE hModule = nullptr;
     HRSRC resourceInfo = FindResourceA(hModule, name.c_str(), "CUSTOMDATA");
     if (!resourceInfo) {
         fprintf(stderr, "Could not find resource\n");
         return nullptr;
     }
-    unsigned int myResourceSize = ::SizeofResource(NULL, resourceInfo);
-    HGLOBAL myResourceData = ::LoadResource(NULL, resourceInfo);
+    unsigned int myResourceSize = ::SizeofResource(nullptr, resourceInfo);
+    HGLOBAL myResourceData = ::LoadResource(nullptr, resourceInfo);
     void *pMyBinaryData = ::LockResource(myResourceData);
 
     std::tuple<uint8_t *, std::string, size_t> data((uint8_t *) pMyBinaryData, name, myResourceSize);
@@ -238,24 +233,23 @@ void Game::spawnFruit() {
     fruit.x_ = rand() % RECT_X;
     fruit.y_ = rand() % RECT_Y;
     for (size_t i = 0; i < 5; i++) {
-        if (fruit.y_ == block1.y_[i] && fruit.x_ == block1.x_[i])
+        if (fruit.y_ == block.ct[i].y_ && fruit.x_ == block.ct[i].x_)
             goto here;
     }
     for (size_t i = 1; i < snake1.length_; i++) {
-        if (fruit.y_ == snake1.tailY_[i] && fruit.x_ == snake1.tailX_[i])
+        if (fruit.y_ == snake1.tail[i].y_ && fruit.x_ == snake1.tail[i].x_)
             goto here;
     }
 }
 
 void Game::plungingCheck() {
     for (size_t i = 0; i < 4; i++) {
-        if (snake1.plungingTailCheck() || (snake1.tailX_[0] == block1.x_[i] && snake1.tailY_[0] == block1.y_[i])) {
+        if (snake1.plungingTailCheck() ||
+            (snake1.tail[0].x_ == block.ct[i].x_ && snake1.tail[0].y_ == block.ct[i].y_)) {
             Mix_FreeMusic(music_);
-            Mix_PlayChannel(-1, lose_, 0);
             music_ = nullptr;
+            Mix_PlayChannel(-1, lose_, 0);
             SDL_Delay(1000);
-            snake1.defaultSnake(RECT_X / 2, RECT_Y / 2);
-            SDL_QuitEvent(event_);
             defaultSettings();
             initSDLMixer();
         }
