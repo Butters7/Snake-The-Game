@@ -9,7 +9,8 @@ public:
     friend class Game;
 
 private:
-    Fruit() {};
-    int x_;
-    int y_;
+    Fruit() {
+        cr = Point{0, 0};
+    };
+    Point cr;
 };

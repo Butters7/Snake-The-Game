@@ -1,7 +1,7 @@
 #include "src/Game/Game.h"
 
 int main(int argc, char **argv) {
-    Game snake;
-    snake.start();
+    Game game;
+    game.start();
     return 0;
 }

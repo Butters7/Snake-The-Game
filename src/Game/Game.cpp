@@ -2,23 +2,13 @@
 
 void Game::start() {
     srand(time(0));
-    is_playing_ = true;
-    defaultSettings();
+    snake[0].defaultSnake(0);
+    snake[1].defaultSnake(1);
+    fruit.cr = Point{RECT_X / 2 + 8, RECT_Y / 2 - 4};
     initSDLMixer();
     initializeSDL();
     game();
     quit();
-}
-
-void Game::defaultSettings() {
-    block.ct[0] = Point{RECT_X / 2 - 7, RECT_Y / 2 - 14};
-    block.ct[1] = Point{RECT_X / 2 - 7, RECT_Y / 2 - 12};
-    block.ct[2] = Point{RECT_X / 2 - 6, RECT_Y / 2 - 13};
-    block.ct[3] = Point{RECT_X / 2 - 8, RECT_Y / 2 - 13};
-    block.ct[4] = Point{RECT_X / 2 - 7, RECT_Y / 2 - 13};
-    fruit.x_ = RECT_X / 2 + 8;
-    fruit.y_ = RECT_Y / 2 - 4;
-    snake1.defaultSnake(RECT_X / 2, RECT_Y / 2);
 }
 
 void Game::initSDLMixer() {
@@ -67,7 +57,7 @@ void Game::initializeSDL() {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
             is_playing_ = false;
         } else {
-            icon_ = SDL_LoadBMP_RW(rWops("ICON"), 1);
+            icon_ = SDL_LoadBMP_RW(rWops("SNAKE"), 1);
             if (icon_ == nullptr) {
                 printf("Could not to load icon image! SDL_Error: %s\n", SDL_GetError());
                 is_playing_ = false;
@@ -99,68 +89,109 @@ void Game::quit() {
 }
 
 void Game::game() {
-    Uint32 before, second = SDL_GetTicks(), after;
-    int frame_time, frames = 0;
+    const int count_of_threads = 3;
+    std::thread thread[count_of_threads];
+
+    for (size_t i = 0; i < count_of_threads; i++) {
+        switch (i) {
+            case 0:
+                thread[i] = std::thread([this]() {
+                    this->draw();
+                });
+                break;
+            case 1:
+                thread[i] = std::thread([this]() {
+                    this->isEaten();
+                });
+                break;
+            case 2:
+                thread[i] = std::thread([this]() {
+                    do {
+                        if (this->winner())
+                            this->is_playing_ = false;
+                        SDL_Delay(FRAME_RATE);
+                    } while (this->is_playing_);
+                });
+                break;
+            default:
+                break;
+        }
+    }
 
     while (is_playing_) {
-        before = SDL_GetTicks();
 
         clickHandler();
 
-        snake1.moving();
+        snakeProcessing(0);
+        snakeProcessing(1);
 
-        plungingCheck();
+        updateWindowTitle();
 
-        isEaten();
-
-        draw();
-
-        frames++;
-        after = SDL_GetTicks();
-        frame_time = after - before;
-
-        if (after - second >= 1000) {
-            fps_ = frames;
-            frames = 0;
-            second = after;
-            updateWindowTitle();
-        }
-
-        if (FRAME_RATE > frame_time) {
-            SDL_Delay(FRAME_RATE - frame_time);
-        }
+        SDL_Delay(FRAME_RATE);
     }
+
+    for (size_t i = 0; i < count_of_threads; i++) {
+        if (thread[i].joinable())
+            thread[i].join();
+    }
+
+    if (winner())
+        initWinner();
 }
 
 void Game::isEaten() {
-    if (snake1.tail[0].x_ == fruit.x_ && snake1.tail[0].y_ == fruit.y_) {
-        snake1.snakeGrowth();
-        spawnFruit();
-        Mix_PlayChannel(-1, eating_, 0);
-    }
+    do {
+        if (snake[0].tail[0].x_ == fruit.cr.x_ && snake[0].tail[0].y_ == fruit.cr.y_) {
+            snake[0].snakeGrowth();
+            spawnFruit();
+            Mix_PlayChannel(5, eating_, 0);
+        }
+        if (snake[1].tail[0].x_ == fruit.cr.x_ && snake[1].tail[0].y_ == fruit.cr.y_) {
+            snake[1].snakeGrowth();
+            spawnFruit();
+            Mix_PlayChannel(5, eating_, 0);
+        }
+        SDL_Delay(FRAME_RATE);
+    } while (is_playing_);
 }
 
 void Game::clickHandler() {
+    SDL_Event event_;
     while (SDL_PollEvent(&event_)) {
         switch (event_.type) {
             case SDL_KEYDOWN:
                 switch (event_.key.keysym.sym) {
                     case SDLK_LEFT:
-                        (snake1.dir_ != Direction::RIGHT_DIRECTION && snake1.dir_ != Direction::STOP_DIRECTION &&
-                         snake1.moveX_ != 1)
-                        ? snake1.dir_ = LEFT_DIRECTION : snake1.dir_ = RIGHT_DIRECTION;
+                        (snake[0].dir_ != Direction::RIGHT_DIRECTION && snake[0].move.x_ != 1)
+                        ? snake[0].dir_ = LEFT_DIRECTION : snake[0].dir_ = RIGHT_DIRECTION;
                         break;
                     case SDLK_RIGHT:
-                        (snake1.dir_ != Direction::LEFT_DIRECTION && snake1.moveX_ != -1)
-                        ? snake1.dir_ = RIGHT_DIRECTION : snake1.dir_ = LEFT_DIRECTION;
+                        (snake[0].dir_ != Direction::LEFT_DIRECTION && snake[0].move.x_ != -1)
+                        ? snake[0].dir_ = RIGHT_DIRECTION : snake[0].dir_ = LEFT_DIRECTION;
                         break;
                     case SDLK_UP:
-                        (snake1.dir_ != Direction::DOWN_DIRECTION && snake1.moveY_ != 1)
-                        ? snake1.dir_ = UP_DIRECTION : snake1.dir_ = DOWN_DIRECTION;
+                        (snake[0].dir_ != Direction::DOWN_DIRECTION && snake[0].move.y_ != 1)
+                        ? snake[0].dir_ = UP_DIRECTION : snake[0].dir_ = DOWN_DIRECTION;
                         break;
                     case SDLK_DOWN:
-                        (snake1.dir_ != Direction::UP_DIRECTION && snake1.moveY_ != -1)
-                        ? snake1.dir_ = DOWN_DIRECTION : snake1.dir_ = UP_DIRECTION;
+                        (snake[0].dir_ != Direction::UP_DIRECTION && snake[0].move.y_ != -1)
+                        ? snake[0].dir_ = DOWN_DIRECTION : snake[0].dir_ = UP_DIRECTION;
+                        break;
+                    case SDLK_a:
+                        (snake[1].dir_ != Direction::RIGHT_DIRECTION && snake[1].move.x_ != 1)
+                        ? snake[1].dir_ = LEFT_DIRECTION : snake[1].dir_ = RIGHT_DIRECTION;
+                        break;
+                    case SDLK_d:
+                        (snake[1].dir_ != Direction::LEFT_DIRECTION && snake[1].move.x_ != -1)
+                        ? snake[1].dir_ = RIGHT_DIRECTION : snake[1].dir_ = LEFT_DIRECTION;
+                        break;
+                    case SDLK_w:
+                        (snake[1].dir_ != Direction::DOWN_DIRECTION && snake[1].move.y_ != 1)
+                        ? snake[1].dir_ = UP_DIRECTION : snake[1].dir_ = DOWN_DIRECTION;
+                        break;
+                    case SDLK_s:
+                        (snake[1].dir_ != Direction::UP_DIRECTION && snake[1].move.y_ != -1)
+                        ? snake[1].dir_ = DOWN_DIRECTION : snake[1].dir_ = UP_DIRECTION;
                         break;
                     default:
                         break;
@@ -173,43 +204,176 @@ void Game::clickHandler() {
                 break;
         }
     }
-    snake1.changeDirection();
+    snake[0].changeDirection();
+    snake[1].changeDirection();
 }
 
 void Game::updateWindowTitle() {
-    std::string title = "Snake. Score: " + std::to_string(snake1.length_ - 3) + " FPS: " + std::to_string(fps_);
+    std::string title =
+            "Snake. Blue: " + std::to_string(snake[0].length_ - MIN_LENGTH) + "/" + std::to_string(WIN_SCORE) +
+            ". Green: " +
+            std::to_string(snake[1].length_ - MIN_LENGTH) + "/" + std::to_string(WIN_SCORE) +
+            ". FPS: " + std::to_string(SPEED);
     SDL_SetWindowTitle(window_, title.c_str());
 }
 
 void Game::draw() {
-    SDL_Color color;
-    SDL_Rect rect;
+    do {
+        SDL_Color color;
+        SDL_Rect rect;
 
-    SDL_SetRenderDrawColor(renderer_, 0x63, 0x63, 0x63, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(renderer_);
+        SDL_SetRenderDrawColor(renderer_, 0x63, 0x63, 0x63, SDL_ALPHA_OPAQUE);
+        SDL_RenderClear(renderer_);
 
-    for (size_t i = 0; i < snake1.length_; i++) {
-        if (i == 0)
-            color = {0x00, 0x00, 0xFF};
-        else
-            color = {0xFF, 0xFF, 0xFF};
-        rect = {snake1.tail[i].x_ * GRID_WIDTH, snake1.tail[i].y_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
+        for (size_t number = 0; number < 2; number++) {
+            for (size_t i = 1; i < snake[number].length_; i++) {
+                color = {0xFF, 0xFF, 0xFF};
+                rect = {snake[number].tail[i].x_ * GRID_WIDTH, snake[number].tail[i].y_ * GRID_HEIGHT, GRID_WIDTH,
+                        GRID_HEIGHT};
+                SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+                SDL_RenderFillRect(renderer_, &rect);
+            }
+
+            if (number == 0)
+                color = {0x00, 0x00, 0xFF};
+            else
+                color = {0x00, 0xFF, 0x00};
+
+            rect = {snake[number].tail[0].x_ * GRID_WIDTH, snake[number].tail[0].y_ * GRID_HEIGHT, GRID_WIDTH,
+                    GRID_HEIGHT};
+            SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+            SDL_RenderFillRect(renderer_, &rect);
+        }
+
+        for (size_t i = 0; i < block.ct.size(); i++) {
+            color = {0x00, 0x00, 0x00};
+            rect = {block.ct[i].x_ * GRID_WIDTH, block.ct[i].y_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
+            SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+            SDL_RenderFillRect(renderer_, &rect);
+        }
+
+        color = {0xFF, 0xFF, 0x00};
+        rect = {fruit.cr.x_ * GRID_WIDTH, fruit.cr.y_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
         SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
         SDL_RenderFillRect(renderer_, &rect);
-    }
+        SDL_RenderPresent(renderer_);
+        SDL_Delay(FRAME_RATE);
+    } while (is_playing_);
+}
 
-    for (size_t i = 0; i < 5; i++) {
-        color = {0x00, 0x00, 0x00};
-        rect = {block.ct[i].x_ * GRID_WIDTH, block.ct[i].y_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
-        SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
-        SDL_RenderFillRect(renderer_, &rect);
+void Game::spawnFruit() {
+    here:
+    fruit.cr = Point{rand() % RECT_X, rand() % RECT_X};
+    for (size_t i = 0; i < block.ct.size(); i++) {
+        if (fruit.cr.y_ == block.ct[i].y_ && fruit.cr.x_ == block.ct[i].x_)
+            goto here;
     }
+    for (size_t i = 1; i < snake[0].length_; i++) {
+        if (fruit.cr.y_ == snake[0].tail[i].y_ && fruit.cr.x_ == snake[0].tail[i].x_)
+            goto here;
+    }
+    for (size_t i = 1; i < snake[1].length_; i++) {
+        if (fruit.cr.y_ == snake[1].tail[i].y_ && fruit.cr.x_ == snake[1].tail[i].x_)
+            goto here;
+    }
+}
 
-    color = {0xFF, 0xFF, 0x00};
-    rect = {fruit.x_ * GRID_WIDTH, fruit.y_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
-    SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
-    SDL_RenderFillRect(renderer_, &rect);
-    SDL_RenderPresent(renderer_);
+bool Game::winner() {
+    if ((snake[0].length_ - MIN_LENGTH) == WIN_SCORE || (snake[1].length_ - MIN_LENGTH) == WIN_SCORE) {
+        return true;
+    }
+    return false;
+}
+
+void Game::initWinner() {
+    updateWindowTitle();
+    SDL_Surface *image = nullptr;
+    Mix_FreeMusic(music_);
+    music_ = nullptr;
+
+    if ((snake[0].length_ - MIN_LENGTH) == WIN_SCORE) {
+        music_ = Mix_LoadMUS_RW(rWops("BLUE_POWER"), 1);
+        image = SDL_LoadBMP_RW(rWops("BP"), 1);
+    } else if ((snake[1].length_ - MIN_LENGTH) == WIN_SCORE) {
+        music_ = Mix_LoadMUS_RW(rWops("GREEN_POWER"), 1);
+        image = SDL_LoadBMP_RW(rWops("GP"), 1);
+    }
+    if (music_ == nullptr || image == nullptr) {
+        printf("Failed to load file! SDL_mixer Error: %s\n", Mix_GetError());
+    } else {
+        if (Mix_PlayingMusic() == 0) {
+            Mix_PlayMusic(music_, -1);
+            Mix_VolumeMusic(50);
+        }
+        SDL_RenderCopy(renderer_, SDL_CreateTextureFromSurface(renderer_, image), nullptr, nullptr);
+        SDL_RenderPresent(renderer_);
+
+        SDL_Event e;
+        bool quit = false;
+        while (quit == false) {
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT)
+                    quit = true;
+            }
+        }
+
+        SDL_FreeSurface(image);
+        image = nullptr;
+    }
+}
+
+void Game::snakeProcessing(const int &number) {
+    if (snake[number].move.x_ != 0 || snake[number].move.y_ != 0) {
+        snake[number].moving();
+        if (snake[number].plungingTailCheck()) {
+            loseProcessing();
+            if (number == 0)
+                snake[number].defaultSnake(0);
+            else
+                snake[number].defaultSnake(1);
+            return;
+        }
+        for (size_t i = 0; i < block.ct.size(); i++) {
+            if ((i % 5 != 0) &&
+                (snake[number].tail[0].x_ == block.ct[i].x_ && snake[number].tail[0].y_ == block.ct[i].y_)) {
+                loseProcessing();
+                if (number == 0)
+                    snake[number].defaultSnake(0);
+                else
+                    snake[number].defaultSnake(1);
+                return;
+            }
+        }
+        if (snake[0].tail[0].x_ == snake[1].tail[0].x_ && snake[0].tail[0].y_ == snake[1].tail[0].y_) {
+            loseProcessing();
+            snake[1].defaultSnake(1);
+            snake[0].defaultSnake(0);
+            return;
+        }
+        if (number == 0) {
+            for (size_t i = 1; i < snake[1].length_; i++) {
+                if (snake[0].tail[0].x_ == snake[1].tail[i].x_ && snake[0].tail[0].y_ == snake[1].tail[i].y_) {
+                    loseProcessing();
+                    snake[0].defaultSnake(0);
+                    return;
+                }
+            }
+        } else {
+            for (size_t i = 1; i < snake[0].length_; i++) {
+                if (snake[1].tail[0].x_ == snake[0].tail[i].x_ && snake[1].tail[0].y_ == snake[0].tail[i].y_) {
+                    loseProcessing();
+                    snake[1].defaultSnake(1);
+                    return;
+                }
+            }
+        }
+    }
+}
+
+void Game::loseProcessing() {
+    if (!Mix_Playing(-1)) {
+        Mix_PlayChannel(-1, lose_, 0);
+    }
 }
 
 SDL_RWops *Game::rWops(const std::string &name) {
@@ -226,32 +390,4 @@ SDL_RWops *Game::rWops(const std::string &name) {
     std::tuple<uint8_t *, std::string, size_t> data((uint8_t *) pMyBinaryData, name, myResourceSize);
 
     return SDL_RWFromMem(std::get<0>(data), std::get<2>(data));
-}
-
-void Game::spawnFruit() {
-    here:
-    fruit.x_ = rand() % RECT_X;
-    fruit.y_ = rand() % RECT_Y;
-    for (size_t i = 0; i < 5; i++) {
-        if (fruit.y_ == block.ct[i].y_ && fruit.x_ == block.ct[i].x_)
-            goto here;
-    }
-    for (size_t i = 1; i < snake1.length_; i++) {
-        if (fruit.y_ == snake1.tail[i].y_ && fruit.x_ == snake1.tail[i].x_)
-            goto here;
-    }
-}
-
-void Game::plungingCheck() {
-    for (size_t i = 0; i < 4; i++) {
-        if (snake1.plungingTailCheck() ||
-            (snake1.tail[0].x_ == block.ct[i].x_ && snake1.tail[0].y_ == block.ct[i].y_)) {
-            Mix_FreeMusic(music_);
-            music_ = nullptr;
-            Mix_PlayChannel(-1, lose_, 0);
-            SDL_Delay(1000);
-            defaultSettings();
-            initSDLMixer();
-        }
-    }
 }

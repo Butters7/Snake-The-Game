@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Consts/Consts.h"
-#include <array>
+#include <vector>
 #include <cmath>
 
 class Game;
@@ -21,10 +21,14 @@ public:
 private:
 
     //Declare private constructor
-    Snake() {};
+    Snake() {
+        length_ = 3;
+        dir_ = STOP_DIRECTION;
+        move = Point{0, 0};
+    };
 
     //Default settings of a snake
-    void defaultSnake(const int &X_, const int &Y_);
+    void defaultSnake(const int& number);
 
     //Indicate direction
     void changeDirection();
@@ -41,9 +45,9 @@ private:
     //If snake hit the tail restart the game
     bool plungingTailCheck();
 
-    int moveX_;
-    int moveY_;
+private:
     int length_;
-    std::array<Point, 200> tail;
+    Point move;
+    std::vector<Point> tail;
     Direction dir_;
 };
