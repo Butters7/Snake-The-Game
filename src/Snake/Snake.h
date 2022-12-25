@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Consts/Consts.h"
-#include <vector>
+#include <array>
 #include <cmath>
 
 class Game;
@@ -24,11 +24,12 @@ private:
     Snake() {
         length_ = 3;
         dir_ = STOP_DIRECTION;
+        tail.fill(Point{0, 0});
         move = Point{0, 0};
     };
 
     //Default settings of a snake
-    void defaultSnake(const int& number);
+    void defaultSnake(const int &number);
 
     //Indicate direction
     void changeDirection();
@@ -48,6 +49,6 @@ private:
 private:
     int length_;
     Point move;
-    std::vector<Point> tail;
+    std::array<Point, WIN_SCORE + MIN_LENGTH> tail;
     Direction dir_;
 };

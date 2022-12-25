@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Snake\Snake.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Consts\Consts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Block\Block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Fruit\Fruit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Snake\Snake.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\Files\gameres.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4ABF3234-8E32-3A87-AA20-6DE949BCDB2B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{76C1BEAE-EF0A-3938-8341-9B2BE7798275}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

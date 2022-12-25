@@ -26,7 +26,7 @@ link_directories(${SDL2_MIXER_LIB_DIR})
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILE}
         ${SOURCES_FOLDER}/Consts/Consts.h
         ${SOURCES_FOLDER}/Block/Block.h
-        ${SOURCES_FOLDER}/Fruit/Fruit.h
+        ${SOURCES_FOLDER}/Fruit/Fruit.h ${SOURCES_FOLDER}/Fruit/BigFruit.h
         ${SOURCES_FOLDER}/Game/Game.h ${SOURCES_FOLDER}/Game/Game.cpp
         ${SOURCES_FOLDER}/Snake/Snake.h ${SOURCES_FOLDER}/Snake/Snake.cpp
         ${RC_FILE})

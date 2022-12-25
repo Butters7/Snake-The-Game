@@ -4,17 +4,14 @@ void Snake::defaultSnake(const int &number) {
     length_ = MIN_LENGTH;
     move = Point{0, 0};
     dir_ = STOP_DIRECTION;
-    if (!tail.empty()) { tail.clear(); };
-    if (number == 0) {
-        tail.push_back(Point{0, RECT_Y / 2 - 2});
-        for (size_t i = 1; i < length_; i++) {
-            tail.push_back(Point{tail[i - 1].x_, tail[i - 1].y_});
-        }
-    } else {
-        tail.push_back(Point{0, RECT_Y / 2 + 2});
-        for (size_t i = 1; i < length_; i++) {
-            tail.push_back(Point{tail[i - 1].x_, tail[i - 1].y_});
-        }
+    tail.fill(Point{0, 0});
+    if (number == 0)
+        tail[0] = Point{0, RECT_Y / 2 - 2};
+    else
+        tail[0] = Point{0, RECT_Y / 2 + 2};
+
+    for (size_t i = 1; i < length_; i++) {
+        tail[i] = Point{tail[i - 1].x_, tail[i - 1].y_};
     }
 }
 
@@ -64,7 +61,7 @@ void Snake::endProcess() {
 
 void Snake::snakeGrowth() {
     length_++;
-    tail.push_back(Point{tail[length_ - 2].x_ - std::abs(move.x_), tail[length_ - 2].y_ - std::abs(move.y_)});
+    tail[length_ - 1] = Point{tail[length_ - 2].x_ - std::abs(move.x_), tail[length_ - 2].y_ - std::abs(move.y_)};
 }
 
 bool Snake::plungingTailCheck() {

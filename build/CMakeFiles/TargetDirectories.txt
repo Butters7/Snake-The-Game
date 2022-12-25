@@ -1,0 +1,3 @@
+C:/Users/Egor Davydov/Desktop/Programs/C++/HW3_3/build/CMakeFiles/Snake_The_Game.dir
+C:/Users/Egor Davydov/Desktop/Programs/C++/HW3_3/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Egor Davydov/Desktop/Programs/C++/HW3_3/build/CMakeFiles/ZERO_CHECK.dir

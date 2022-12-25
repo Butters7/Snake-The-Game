@@ -109,7 +109,6 @@ void Game::game() {
                     do {
                         if (this->winner())
                             this->is_playing_ = false;
-                        SDL_Delay(FRAME_RATE);
                     } while (this->is_playing_);
                 });
                 break;
@@ -151,7 +150,6 @@ void Game::isEaten() {
             spawnFruit();
             Mix_PlayChannel(5, eating_, 0);
         }
-        SDL_Delay(FRAME_RATE);
     } while (is_playing_);
 }
 
@@ -257,7 +255,6 @@ void Game::draw() {
         SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
         SDL_RenderFillRect(renderer_, &rect);
         SDL_RenderPresent(renderer_);
-        SDL_Delay(FRAME_RATE);
     } while (is_playing_);
 }
 
