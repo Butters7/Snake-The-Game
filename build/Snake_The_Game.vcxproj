@@ -313,6 +313,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Consts\Consts.h" />
     <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Block\Block.h" />
     <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Fruit\Fruit.h" />
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Fruit\BigFruit.h" />
     <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\Game.h" />
     <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\Game.cpp" />
     <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Snake\Snake.h" />

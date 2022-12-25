@@ -3,6 +3,7 @@
 #include "../Snake/Snake.h"
 #include "../Block/Block.h"
 #include "../Fruit/Fruit.h"
+#include "../Fruit/BigFruit.h"
 #include <string>
 #include "SDL_mixer.h"
 #include "Windows.h"
@@ -34,8 +35,13 @@ private:
     //Checking if the snake hit the tail or block or other snake
     void snakeProcessing(const int &number);
 
+    //Process of big fruit
+    void bigFruitProcessing();
+
+    void bfp();
+
     //If lose then play chunk
-    void loseProcessing();
+    void loseProcessing(const int &number);
 
     //Spawn fruit until he appears not in a snake or in a block
     void spawnFruit();
@@ -68,10 +74,13 @@ private:
     static SDL_RWops *rWops(const std::string &name);
 
     Snake snake[2];
+    BigFruit b_fruit;
     Fruit fruit;
     Block block;
     bool is_playing_;
     Mix_Music *music_;
+    Mix_Chunk *countdown_;
+    Mix_Chunk  *isItMe_;
     Mix_Chunk *eating_;
     Mix_Chunk *lose_;
     SDL_Surface *icon_;
