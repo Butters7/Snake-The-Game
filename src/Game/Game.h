@@ -9,6 +9,8 @@
 #include "Windows.h"
 #include <thread>
 #include "SDL.h"
+#include "StartMenu.h"
+
 
 class Game {
 public:
@@ -24,6 +26,9 @@ public:
         window_ = nullptr;
         renderer_ = nullptr;
     }
+
+    //Loading our resources from rc file
+    static SDL_RWops *rWops(const std::string &name);
 
 private:
     //Init music and sounds from SDL Mixer
@@ -69,9 +74,6 @@ private:
 
     //Initialize bmp file with winner
     void initWinner();
-
-    //Loading our resources from rc file
-    static SDL_RWops *rWops(const std::string &name);
 
     Snake snake[2];
     BigFruit b_fruit;

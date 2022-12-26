@@ -28,6 +28,7 @@ add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILE}
         ${SOURCES_FOLDER}/Block/Block.h
         ${SOURCES_FOLDER}/Fruit/Fruit.h ${SOURCES_FOLDER}/Fruit/BigFruit.h
         ${SOURCES_FOLDER}/Game/Game.h ${SOURCES_FOLDER}/Game/Game.cpp
+        ${SOURCES_FOLDER}/Game/StartMenu.h  ${SOURCES_FOLDER}/Game/StartMenu.cpp
         ${SOURCES_FOLDER}/Snake/Snake.h ${SOURCES_FOLDER}/Snake/Snake.cpp
         ${RC_FILE})
 

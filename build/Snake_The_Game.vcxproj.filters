@@ -7,6 +7,9 @@
     <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\StartMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Snake\Snake.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -25,6 +28,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\StartMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Snake\Snake.h">

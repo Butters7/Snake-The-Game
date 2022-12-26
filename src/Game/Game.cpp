@@ -5,10 +5,13 @@ void Game::start() {
     snake[0].defaultSnake(0);
     snake[1].defaultSnake(1);
     fruit.cr = Point{RECT_X / 2 + 8, RECT_Y / 2 - 4};
-    initSDLMixer();
-    initializeSDL();
-    game();
-    quit();
+    StartMenu sm;
+    if (sm.getNextStep()) {
+        initSDLMixer();
+        initializeSDL();
+        game();
+        quit();
+    }
 }
 
 void Game::initSDLMixer() {
@@ -37,13 +40,13 @@ void Game::initSDLMixer() {
         if (isItMe_ == nullptr) {
             printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
             is_playing_ = false;
-        }
+        } else { Mix_VolumeChunk(isItMe_, 7); }
 
         eating_ = Mix_LoadWAV_RW(rWops("EAT"), 1);
         if (eating_ == nullptr) {
             printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
             is_playing_ = false;
-        }
+        } else { Mix_VolumeChunk(eating_, 7); }
 
         lose_ = Mix_LoadWAV_RW(rWops("LOSE"), 1);
         if (lose_ == nullptr) {
@@ -51,10 +54,8 @@ void Game::initSDLMixer() {
             is_playing_ = false;
         } else { Mix_VolumeChunk(lose_, 7); }
 
-        if (Mix_PlayingMusic() == 0) {
-            Mix_PlayMusic(music_, -1);
-            Mix_VolumeMusic(3);
-        }
+        Mix_PlayMusic(music_, -1);
+        Mix_VolumeMusic(3);
     }
 }
 
@@ -101,6 +102,9 @@ void Game::quit() {
 
     SDL_DestroyWindow(window_);
     window_ = nullptr;
+
+    SDL_FreeSurface(icon_);
+    icon_ = nullptr;
 
     Mix_Quit();
     SDL_Quit();
@@ -329,6 +333,7 @@ bool Game::winner() {
 void Game::initWinner() {
     updateWindowTitle();
     SDL_Surface *image = nullptr;
+    SDL_Texture *texture = nullptr;
     Mix_FreeMusic(music_);
     music_ = nullptr;
 
@@ -342,24 +347,25 @@ void Game::initWinner() {
     if (music_ == nullptr || image == nullptr) {
         printf("Failed to load file! SDL_mixer Error: %s\n", Mix_GetError());
     } else {
-        if (Mix_PlayingMusic() == 0) {
-            Mix_PlayMusic(music_, -1);
-            Mix_VolumeMusic(50);
-        }
-        SDL_RenderCopy(renderer_, SDL_CreateTextureFromSurface(renderer_, image), nullptr, nullptr);
+        Mix_PlayMusic(music_, -1);
+        Mix_VolumeMusic(50);
+        texture = SDL_CreateTextureFromSurface(renderer_, image);
+        SDL_RenderCopy(renderer_, texture, nullptr, nullptr);
         SDL_RenderPresent(renderer_);
 
         SDL_Event e;
-        bool quit = false;
-        while (quit == false) {
+        is_playing_ = true;
+        while (is_playing_) {
             while (SDL_PollEvent(&e)) {
                 if (e.type == SDL_QUIT)
-                    quit = true;
+                    is_playing_ = false;
             }
         }
 
         SDL_FreeSurface(image);
         image = nullptr;
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
     }
 }
 
@@ -471,6 +477,7 @@ void Game::bfp() {
             for (size_t j = 0; j < 4; j++) {
                 if (snake[i].tail[0].x_ == b_fruit.cr[j].x_ && snake[i].tail[0].y_ == b_fruit.cr[j].y_) {
                     Mix_HaltChannel(3);
+                    Mix_VolumeChunk(isItMe_, 15);
                     Mix_PlayChannel(3, isItMe_, 0);
                     snake[i].snakeGrowth();
                     snake[i].snakeGrowth();
