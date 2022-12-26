@@ -10,6 +10,12 @@ public:
 
 private:
 
+    void firstCondition();
+
+    void secondCondition();
+
+    void thirdCondition();
+
     void initSDL();
 
     void declareStart();
@@ -17,6 +23,7 @@ private:
     void quit();
 
 private:
+    char current_pos_;
     bool next_step_;
     bool is_playing_;
     SDL_Rect for_start_;

@@ -1,6 +1,7 @@
 #include "StartMenu.h"
 
 StartMenu::StartMenu() {
+    current_pos_ = 0;
     next_step_ = false;
     is_playing_ = true;
     icon_ = nullptr;
@@ -28,48 +29,37 @@ void StartMenu::declareStart() {
 
     SDL_SetWindowIcon(window_, icon_);
     renderer_ = SDL_CreateRenderer(window_, -1, 0);
-    texture_ = SDL_CreateTextureFromSurface(renderer_, back_);
-    SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
-    SDL_DestroyTexture(texture_);
-    texture_ = SDL_CreateTextureFromSurface(renderer_, u_start_);
-    SDL_RenderCopy(renderer_, texture_, nullptr, &for_start_);
-    SDL_DestroyTexture(texture_);
-    texture_ = SDL_CreateTextureFromSurface(renderer_, u_exit_);
-    SDL_RenderCopy(renderer_, texture_, nullptr, &for_exit_);
-    SDL_DestroyTexture(texture_);
+    firstCondition();
     SDL_RenderPresent(renderer_);
     Mix_PlayMusic(music_, -1);
     Mix_VolumeMusic(3);
+
+    int xMouse = 0, yMouse = 0;
 
     SDL_Event e;
     while (is_playing_) {
         while (SDL_PollEvent(&e)) {
             switch (e.type) {
+                case SDL_MOUSEMOTION:
+                    SDL_GetMouseState(&xMouse, &yMouse);
+                    if (xMouse > 350 && xMouse < 570 && yMouse > 180 && yMouse < 280)
+                        secondCondition();
+                    else if (xMouse > 350 && xMouse < 570 && yMouse > 300 && yMouse < 400)
+                        thirdCondition();
+                    else
+                        firstCondition();
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    if (current_pos_ == 's' || current_pos_ == 'e')
+                        is_playing_ = false;
+                    break;
                 case SDL_KEYDOWN:
                     switch (e.key.keysym.sym) {
                         case SDLK_UP:
-                            texture_ = SDL_CreateTextureFromSurface(renderer_, back_);
-                            SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
-                            SDL_DestroyTexture(texture_);
-                            texture_ = SDL_CreateTextureFromSurface(renderer_, d_start_);
-                            SDL_RenderCopy(renderer_, texture_, nullptr, &for_start_);
-                            SDL_DestroyTexture(texture_);
-                            texture_ = SDL_CreateTextureFromSurface(renderer_, u_exit_);
-                            SDL_RenderCopy(renderer_, texture_, nullptr, &for_exit_);
-                            SDL_DestroyTexture(texture_);
-                            next_step_ = true;
+                            secondCondition();
                             break;
                         case SDLK_DOWN:
-                            texture_ = SDL_CreateTextureFromSurface(renderer_, back_);
-                            SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
-                            SDL_DestroyTexture(texture_);
-                            texture_ = SDL_CreateTextureFromSurface(renderer_, u_start_);
-                            SDL_RenderCopy(renderer_, texture_, nullptr, &for_start_);
-                            SDL_DestroyTexture(texture_);
-                            texture_ = SDL_CreateTextureFromSurface(renderer_, d_exit_);
-                            SDL_RenderCopy(renderer_, texture_, nullptr, &for_exit_);
-                            SDL_DestroyTexture(texture_);
-                            next_step_ = false;
+                            thirdCondition();
                             break;
                         case SDLK_RETURN:
                             is_playing_ = false;
@@ -77,6 +67,7 @@ void StartMenu::declareStart() {
                     }
                     break;
                 case SDL_QUIT:
+                    next_step_ = false;
                     is_playing_ = false;
                     break;
             }
@@ -143,4 +134,45 @@ void StartMenu::initSDL() {
             }
         }
     }
+}
+
+void StartMenu::firstCondition() {
+    texture_ = SDL_CreateTextureFromSurface(renderer_, back_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
+    SDL_DestroyTexture(texture_);
+    texture_ = SDL_CreateTextureFromSurface(renderer_, u_start_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, &for_start_);
+    SDL_DestroyTexture(texture_);
+    texture_ = SDL_CreateTextureFromSurface(renderer_, u_exit_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, &for_exit_);
+    current_pos_ = 0;
+    SDL_DestroyTexture(texture_);
+}
+
+void StartMenu::secondCondition() {
+    texture_ = SDL_CreateTextureFromSurface(renderer_, back_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
+    SDL_DestroyTexture(texture_);
+    texture_ = SDL_CreateTextureFromSurface(renderer_, d_start_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, &for_start_);
+    SDL_DestroyTexture(texture_);
+    texture_ = SDL_CreateTextureFromSurface(renderer_, u_exit_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, &for_exit_);
+    SDL_DestroyTexture(texture_);
+    current_pos_ = 's';
+    next_step_ = true;
+}
+
+void StartMenu::thirdCondition() {
+    texture_ = SDL_CreateTextureFromSurface(renderer_, back_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
+    SDL_DestroyTexture(texture_);
+    texture_ = SDL_CreateTextureFromSurface(renderer_, u_start_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, &for_start_);
+    SDL_DestroyTexture(texture_);
+    texture_ = SDL_CreateTextureFromSurface(renderer_, d_exit_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, &for_exit_);
+    SDL_DestroyTexture(texture_);
+    current_pos_ = 'e';
+    next_step_ = false;
 }
