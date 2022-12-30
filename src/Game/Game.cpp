@@ -46,16 +46,16 @@ void Game::initSDLMixer() {
         if (eating_ == nullptr) {
             printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
             is_playing_ = false;
-        } else { Mix_VolumeChunk(eating_, 7); }
+        } else { Mix_VolumeChunk(eating_, 15); }
 
         lose_ = Mix_LoadWAV_RW(rWops("LOSE"), 1);
         if (lose_ == nullptr) {
             printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
             is_playing_ = false;
-        } else { Mix_VolumeChunk(lose_, 7); }
+        } else { Mix_VolumeChunk(lose_, 15); }
 
         Mix_PlayMusic(music_, -1);
-        Mix_VolumeMusic(3);
+        Mix_VolumeMusic(10);
     }
 }
 

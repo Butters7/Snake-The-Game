@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\build\CMakeFiles\b993c86702016aea57d63e38ff0caffc\generate.stamp.rule">
+    <CustomBuild Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\build\CMakeFiles\31c335f51a735ffc925751ffcd2bafc3\generate.stamp.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{ADF0D912-0EB6-340F-B822-57CB2F323BCA}</UniqueIdentifier>
+      <UniqueIdentifier>{91013880-7053-3DB7-817F-E366CB2B7DC1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

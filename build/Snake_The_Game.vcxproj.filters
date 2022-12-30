@@ -1,56 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\main.cpp">
+    <ClCompile Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\Game.cpp">
+    <ClCompile Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\src\Game\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\StartMenu.cpp">
+    <ClCompile Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\src\Game\StartMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Snake\Snake.cpp">
+    <ClCompile Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\src\Snake\Snake.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Consts\Consts.h">
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\src\Consts\Consts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Block\Block.h">
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\src\Block\Block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Fruit\Fruit.h">
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\src\Fruit\Fruit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Fruit\BigFruit.h">
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\src\Fruit\BigFruit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\Game.h">
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\src\Game\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Game\StartMenu.h">
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\src\Game\StartMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\src\Snake\Snake.h">
+    <ClInclude Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\src\Snake\Snake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="C:\Users\Egor Davydov\Desktop\Programs\C++\HW3_3\Files\gameres.rc">
+    <ResourceCompile Include="C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\Files\gameres.rc">
       <Filter>Source Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{4ABF3234-8E32-3A87-AA20-6DE949BCDB2B}</UniqueIdentifier>
+      <UniqueIdentifier>{CA1E9FC8-D8F7-3820-B1D2-53F78136A6A8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{76C1BEAE-EF0A-3938-8341-9B2BE7798275}</UniqueIdentifier>
+      <UniqueIdentifier>{B3AB8F2D-E7C7-31A5-8552-A53B55AC6346}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

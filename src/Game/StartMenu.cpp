@@ -8,20 +8,15 @@ StartMenu::StartMenu() {
     music_ = nullptr;
     window_ = nullptr;
     renderer_ = nullptr;
-    back_ = nullptr;
+    back_start_ = nullptr;
     u_start_ = nullptr;
     d_start_ = nullptr;
     u_exit_ = nullptr;
     d_exit_ = nullptr;
     texture_ = nullptr;
-    for_start_.x = 125;
-    for_start_.y = -75;
-    for_start_.w = 640;
-    for_start_.h = 640;
-    for_exit_.x = 125;
-    for_exit_.y = 50;
-    for_exit_.w = 640;
-    for_exit_.h = 640;
+    for_back_ = SDL_Rect{0, 0, 640, 640};
+    for_start_ = SDL_Rect{350, 200, 200, 120};
+    for_exit_ = SDL_Rect{350, 325, 196, 120};
     initSDL();
 }
 
@@ -29,10 +24,10 @@ void StartMenu::declareStart() {
 
     SDL_SetWindowIcon(window_, icon_);
     renderer_ = SDL_CreateRenderer(window_, -1, 0);
-    firstCondition();
+    firStart();
     SDL_RenderPresent(renderer_);
     Mix_PlayMusic(music_, -1);
-    Mix_VolumeMusic(3);
+    Mix_VolumeMusic(15);
 
     int xMouse = 0, yMouse = 0;
 
@@ -42,27 +37,30 @@ void StartMenu::declareStart() {
             switch (e.type) {
                 case SDL_MOUSEMOTION:
                     SDL_GetMouseState(&xMouse, &yMouse);
-                    if (xMouse > 350 && xMouse < 570 && yMouse > 180 && yMouse < 280)
-                        secondCondition();
-                    else if (xMouse > 350 && xMouse < 570 && yMouse > 300 && yMouse < 400)
-                        thirdCondition();
-                    else
-                        firstCondition();
+                    if (xMouse > 350 && xMouse < 550 && yMouse > 220 && yMouse < 290)
+                        secStart();
+                    else if (xMouse > 350 && xMouse < 550 && yMouse > 340 && yMouse < 410)
+                        thirdStart();
+                    else {
+                        firStart();
+                        current_pos_ = 0;
+                    }
                     break;
                 case SDL_MOUSEBUTTONDOWN:
-                    if (current_pos_ == 's' || current_pos_ == 'e')
+                    if (current_pos_ == 'p' || current_pos_ == 'e')
                         is_playing_ = false;
                     break;
                 case SDL_KEYDOWN:
                     switch (e.key.keysym.sym) {
                         case SDLK_UP:
-                            secondCondition();
+                            secStart();
                             break;
                         case SDLK_DOWN:
-                            thirdCondition();
+                            thirdStart();
                             break;
                         case SDLK_RETURN:
-                            is_playing_ = false;
+                            if (current_pos_)
+                                is_playing_ = false;
                             break;
                     }
                     break;
@@ -85,8 +83,8 @@ void StartMenu::quit() {
     renderer_ = nullptr;
     Mix_FreeMusic(music_);
     music_ = nullptr;
-    SDL_FreeSurface(back_);
-    back_ = nullptr;
+    SDL_FreeSurface(back_start_);
+    back_start_ = nullptr;
     SDL_FreeSurface(u_start_);
     u_start_ = nullptr;
     SDL_FreeSurface(d_start_);
@@ -119,14 +117,14 @@ void StartMenu::initSDL() {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         } else {
             music_ = Mix_LoadMUS_RW(Game::rWops("SONG_START"), 1);
-            back_ = SDL_LoadBMP_RW(Game::rWops("PIC_START"), 1);
+            back_start_ = SDL_LoadBMP_RW(Game::rWops("PIC_START"), 1);
             u_start_ = SDL_LoadBMP_RW(Game::rWops("U_START"), 1);
             d_start_ = SDL_LoadBMP_RW(Game::rWops("D_START"), 1);
             u_exit_ = SDL_LoadBMP_RW(Game::rWops("U_EXIT"), 1);
             d_exit_ = SDL_LoadBMP_RW(Game::rWops("D_EXIT"), 1);
             icon_ = SDL_LoadBMP_RW(Game::rWops("SNAKE"), 1);
 
-            if (!music_ || !back_ || !u_start_ || !d_start_ || !u_exit_ || !d_exit_ || !icon_) {
+            if (!music_ || !back_start_ || !u_start_ || !d_start_ || !u_exit_ || !d_exit_ || !icon_) {
                 printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
             } else {
                 declareStart();
@@ -136,22 +134,22 @@ void StartMenu::initSDL() {
     }
 }
 
-void StartMenu::firstCondition() {
-    texture_ = SDL_CreateTextureFromSurface(renderer_, back_);
-    SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
+void StartMenu::firStart() {
+    texture_ = SDL_CreateTextureFromSurface(renderer_, back_start_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, &for_back_);
     SDL_DestroyTexture(texture_);
     texture_ = SDL_CreateTextureFromSurface(renderer_, u_start_);
     SDL_RenderCopy(renderer_, texture_, nullptr, &for_start_);
     SDL_DestroyTexture(texture_);
     texture_ = SDL_CreateTextureFromSurface(renderer_, u_exit_);
     SDL_RenderCopy(renderer_, texture_, nullptr, &for_exit_);
-    current_pos_ = 0;
     SDL_DestroyTexture(texture_);
+    current_pos_ = 0;
 }
 
-void StartMenu::secondCondition() {
-    texture_ = SDL_CreateTextureFromSurface(renderer_, back_);
-    SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
+void StartMenu::secStart() {
+    texture_ = SDL_CreateTextureFromSurface(renderer_, back_start_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, &for_back_);
     SDL_DestroyTexture(texture_);
     texture_ = SDL_CreateTextureFromSurface(renderer_, d_start_);
     SDL_RenderCopy(renderer_, texture_, nullptr, &for_start_);
@@ -159,13 +157,13 @@ void StartMenu::secondCondition() {
     texture_ = SDL_CreateTextureFromSurface(renderer_, u_exit_);
     SDL_RenderCopy(renderer_, texture_, nullptr, &for_exit_);
     SDL_DestroyTexture(texture_);
-    current_pos_ = 's';
+    current_pos_ = 'p';
     next_step_ = true;
 }
 
-void StartMenu::thirdCondition() {
-    texture_ = SDL_CreateTextureFromSurface(renderer_, back_);
-    SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
+void StartMenu::thirdStart() {
+    texture_ = SDL_CreateTextureFromSurface(renderer_, back_start_);
+    SDL_RenderCopy(renderer_, texture_, nullptr, &for_back_);
     SDL_DestroyTexture(texture_);
     texture_ = SDL_CreateTextureFromSurface(renderer_, u_start_);
     SDL_RenderCopy(renderer_, texture_, nullptr, &for_start_);

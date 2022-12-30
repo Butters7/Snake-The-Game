@@ -10,11 +10,11 @@ public:
 
 private:
 
-    void firstCondition();
+    void firStart();
 
-    void secondCondition();
+    void secStart();
 
-    void thirdCondition();
+    void thirdStart();
 
     void initSDL();
 
@@ -26,13 +26,14 @@ private:
     char current_pos_;
     bool next_step_;
     bool is_playing_;
+    SDL_Rect for_back_;
     SDL_Rect for_start_;
     SDL_Rect for_exit_;
     SDL_Texture *texture_;
     Mix_Music *music_;
     SDL_Window *window_;
     SDL_Renderer *renderer_;
-    SDL_Surface *back_;
+    SDL_Surface *back_start_;
     SDL_Surface *icon_;
     SDL_Surface *u_start_;
     SDL_Surface *d_start_;
