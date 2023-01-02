@@ -1,3 +1,0 @@
-C:/Users/Egor Davydov/Desktop/GitHub/Snake-The-Game/build/CMakeFiles/Snake_The_Game.dir
-C:/Users/Egor Davydov/Desktop/GitHub/Snake-The-Game/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/Egor Davydov/Desktop/GitHub/Snake-The-Game/build/CMakeFiles/ZERO_CHECK.dir
