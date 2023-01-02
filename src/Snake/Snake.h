@@ -49,6 +49,6 @@ private:
 private:
     int length_;
     Point move;
-    std::array<Point, WIN_SCORE + MIN_LENGTH + 1> tail;
+    std::array<Point, WIN_SCORE * MIN_LENGTH> tail;
     Direction dir_;
 };

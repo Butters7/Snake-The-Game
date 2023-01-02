@@ -18,7 +18,10 @@ public:
     void start();
 
     Game() {
+        is_hard_ = false;
         is_playing_ = true;
+        countdown_ = nullptr;
+        isItMe_ = nullptr;
         music_ = nullptr;
         eating_ = nullptr;
         lose_ = nullptr;
@@ -80,6 +83,7 @@ private:
     Fruit fruit;
     Block block;
     bool is_playing_;
+    bool is_hard_;
     Mix_Music *music_;
     Mix_Chunk *countdown_;
     Mix_Chunk  *isItMe_;

@@ -7,7 +7,7 @@ Id flags:
 The output was:
 0
 MSBuild version 17.4.1+9a89d02ff for .NET Framework
-Сборка начата 30.12.2022 3:58:38.
+Сборка начата 02.01.2023 15:45:52.
 Проект "C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\build\CMakeFiles\3.25.1\CompilerIdC\CompilerIdC.vcxproj" в узле 1 (целевые объекты по умолчанию).
 PrepareForBuild:
   Создание каталога "Debug\".
@@ -33,7 +33,7 @@ FinalizeBuildStatus:
     Предупреждений: 0
     Ошибок: 0
 
-Прошло времени 00:00:00.80
+Прошло времени 00:00:00.82
 
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -50,7 +50,7 @@ Id flags:
 The output was:
 0
 MSBuild version 17.4.1+9a89d02ff for .NET Framework
-Сборка начата 30.12.2022 3:58:39.
+Сборка начата 02.01.2023 15:45:53.
 Проект "C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\build\CMakeFiles\3.25.1\CompilerIdCXX\CompilerIdCXX.vcxproj" в узле 1 (целевые объекты по умолчанию).
 PrepareForBuild:
   Создание каталога "Debug\".
@@ -76,7 +76,7 @@ FinalizeBuildStatus:
     Предупреждений: 0
     Ошибок: 0
 
-Прошло времени 00:00:00.74
+Прошло времени 00:00:00.62
 
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
@@ -86,26 +86,26 @@ Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" p
 The CXX compiler identification is MSVC, found in "C:/Users/Egor Davydov/Desktop/GitHub/Snake-The-Game/build/CMakeFiles/3.25.1/CompilerIdCXX/CompilerIdCXX.exe"
 
 Detecting C compiler ABI info compiled with the following output:
-Change Dir: C:/Users/Egor Davydov/Desktop/GitHub/Snake-The-Game/build/CMakeFiles/CMakeScratch/TryCompile-ycxocw
+Change Dir: C:/Users/Egor Davydov/Desktop/GitHub/Snake-The-Game/build/CMakeFiles/CMakeScratch/TryCompile-v7r9b7
 
-Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_f4c8b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && MSBuild version 17.4.1+9a89d02ff for .NET Framework
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_5a1f0.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && MSBuild version 17.4.1+9a89d02ff for .NET Framework
   Microsoft (R) C/C++ Optimizing Compiler Version 19.34.31937 for x64
-  Copyright (C) Microsoft Corporation.  All rights reserved.
   CMakeCCompilerABI.c
-  cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_f4c8b.dir\Debug\\" /Fd"cmTC_f4c8b.dir\Debug\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.25\Modules\CMakeCCompilerABI.c"
-  cmTC_f4c8b.vcxproj -> C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\build\CMakeFiles\CMakeScratch\TryCompile-ycxocw\Debug\cmTC_f4c8b.exe
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5a1f0.dir\Debug\\" /Fd"cmTC_5a1f0.dir\Debug\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.25\Modules\CMakeCCompilerABI.c"
+  cmTC_5a1f0.vcxproj -> C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\build\CMakeFiles\CMakeScratch\TryCompile-v7r9b7\Debug\cmTC_5a1f0.exe
 
 
 
 Detecting CXX compiler ABI info compiled with the following output:
-Change Dir: C:/Users/Egor Davydov/Desktop/GitHub/Snake-The-Game/build/CMakeFiles/CMakeScratch/TryCompile-oe5cdv
+Change Dir: C:/Users/Egor Davydov/Desktop/GitHub/Snake-The-Game/build/CMakeFiles/CMakeScratch/TryCompile-4b9205
 
-Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_0cf44.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && MSBuild version 17.4.1+9a89d02ff for .NET Framework
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_31080.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && MSBuild version 17.4.1+9a89d02ff for .NET Framework
   Microsoft (R) C/C++ Optimizing Compiler Version 19.34.31937 for x64
-  CMakeCXXCompilerABI.cpp
   Copyright (C) Microsoft Corporation.  All rights reserved.
-  cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_0cf44.dir\Debug\\" /Fd"cmTC_0cf44.dir\Debug\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "C:\Program Files\CMake\share\cmake-3.25\Modules\CMakeCXXCompilerABI.cpp"
-  cmTC_0cf44.vcxproj -> C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\build\CMakeFiles\CMakeScratch\TryCompile-oe5cdv\Debug\cmTC_0cf44.exe
+  CMakeCXXCompilerABI.cpp
+  cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_31080.dir\Debug\\" /Fd"cmTC_31080.dir\Debug\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "C:\Program Files\CMake\share\cmake-3.25\Modules\CMakeCXXCompilerABI.cpp"
+  cmTC_31080.vcxproj -> C:\Users\Egor Davydov\Desktop\GitHub\Snake-The-Game\build\CMakeFiles\CMakeScratch\TryCompile-4b9205\Debug\cmTC_31080.exe
 
 
 

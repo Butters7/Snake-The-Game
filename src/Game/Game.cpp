@@ -6,6 +6,12 @@ void Game::start() {
     snake[1].defaultSnake(1);
     fruit.cr = Point{RECT_X / 2 + 8, RECT_Y / 2 - 4};
     StartMenu sm;
+    if (sm.isHard()) {
+        is_hard_ = true;
+        FRAME_RATE = 1000 / 40;
+    }
+    else
+        is_hard_ = false;
     if (sm.getNextStep()) {
         initSDLMixer();
         initializeSDL();
@@ -24,7 +30,10 @@ void Game::initSDLMixer() {
             is_playing_ = false;
         }
 
-        music_ = Mix_LoadMUS_RW(rWops("SONG"), 1);
+        if (is_hard_)
+            music_ = Mix_LoadMUS_RW(rWops("PHONK"), 1);
+        else
+            music_ = Mix_LoadMUS_RW(rWops("SONG"), 1);
         if (music_ == nullptr) {
             printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
             is_playing_ = false;
@@ -46,16 +55,19 @@ void Game::initSDLMixer() {
         if (eating_ == nullptr) {
             printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
             is_playing_ = false;
-        } else { Mix_VolumeChunk(eating_, 15); }
+        } else { Mix_VolumeChunk(eating_, 25); }
 
-        lose_ = Mix_LoadWAV_RW(rWops("LOSE"), 1);
+        if (is_hard_)
+            lose_ = Mix_LoadWAV_RW(rWops("CRASH"), 1);
+        else
+            lose_ = Mix_LoadWAV_RW(rWops("LOSE"), 1);
         if (lose_ == nullptr) {
             printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
             is_playing_ = false;
-        } else { Mix_VolumeChunk(lose_, 15); }
+        } else { Mix_VolumeChunk(lose_, 75); }
 
         Mix_PlayMusic(music_, -1);
-        Mix_VolumeMusic(10);
+        Mix_VolumeMusic(25);
     }
 }
 
@@ -258,19 +270,29 @@ void Game::draw() {
         SDL_Color color;
         SDL_Rect rect;
 
-        SDL_SetRenderDrawColor(renderer_, 0x63, 0x63, 0x63, SDL_ALPHA_OPAQUE);
+        int rgb[3];
+
+        for (size_t q = 0; q < 3; q++) {
+            if (is_hard_)
+                rgb[q] = rand() % 256;
+            else
+                rgb[q] = 0;
+        }
+
+        SDL_SetRenderDrawColor(renderer_, 0x63 + rgb[0], 0x63 + rgb[1], 0x63 + rgb[2], SDL_ALPHA_OPAQUE);
         SDL_RenderClear(renderer_);
 
         color = {0xFF, 0xFF, 0x00};
         rect = {fruit.cr.x_ * GRID_WIDTH, fruit.cr.y_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
-        SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+        SDL_SetRenderDrawColor(renderer_, color.r + rgb[0], color.g + rgb[0], color.b + rgb[0], SDL_ALPHA_OPAQUE);
         SDL_RenderFillRect(renderer_, &rect);
 
         if (b_fruit.isExisting_) {
             color = {0x7B, 0x68, 0xEE};
             for (size_t i = 0; i < 4; i++) {
                 rect = {b_fruit.cr[i].x_ * GRID_WIDTH, b_fruit.cr[i].y_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
-                SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+                SDL_SetRenderDrawColor(renderer_, color.r + rgb[0], color.g + rgb[0], color.b + rgb[0],
+                                       SDL_ALPHA_OPAQUE);
                 SDL_RenderFillRect(renderer_, &rect);
             }
         }
@@ -280,7 +302,8 @@ void Game::draw() {
                 color = {0xFF, 0xFF, 0xFF};
                 rect = {snake[number].tail[i].x_ * GRID_WIDTH, snake[number].tail[i].y_ * GRID_HEIGHT, GRID_WIDTH,
                         GRID_HEIGHT};
-                SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+                SDL_SetRenderDrawColor(renderer_, color.r + rgb[0], color.g + rgb[0], color.b + rgb[0],
+                                       SDL_ALPHA_OPAQUE);
                 SDL_RenderFillRect(renderer_, &rect);
             }
 
@@ -291,18 +314,19 @@ void Game::draw() {
 
             rect = {snake[number].tail[0].x_ * GRID_WIDTH, snake[number].tail[0].y_ * GRID_HEIGHT, GRID_WIDTH,
                     GRID_HEIGHT};
-            SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+            SDL_SetRenderDrawColor(renderer_, color.r + rgb[0], color.g + rgb[0], color.b + rgb[0], SDL_ALPHA_OPAQUE);
             SDL_RenderFillRect(renderer_, &rect);
         }
 
         for (size_t i = 0; i < block.ct.size(); i++) {
             color = {0x00, 0x00, 0x00};
             rect = {block.ct[i].x_ * GRID_WIDTH, block.ct[i].y_ * GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT};
-            SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+            SDL_SetRenderDrawColor(renderer_, color.r + rgb[0], color.g + rgb[0], color.b + rgb[0], SDL_ALPHA_OPAQUE);
             SDL_RenderFillRect(renderer_, &rect);
         }
 
         SDL_RenderPresent(renderer_);
+
     } while (is_playing_);
 }
 
@@ -324,7 +348,7 @@ void Game::spawnFruit() {
 }
 
 bool Game::winner() {
-    if ((snake[0].length_ - MIN_LENGTH) == WIN_SCORE || (snake[1].length_ - MIN_LENGTH) == WIN_SCORE) {
+    if ((snake[0].length_ - MIN_LENGTH) >= WIN_SCORE || (snake[1].length_ - MIN_LENGTH) >= WIN_SCORE) {
         return true;
     }
     return false;
@@ -337,10 +361,10 @@ void Game::initWinner() {
     Mix_FreeMusic(music_);
     music_ = nullptr;
 
-    if ((snake[0].length_ - MIN_LENGTH) == WIN_SCORE) {
+    if (snake[0].length_ > snake[1].length_) {
         music_ = Mix_LoadMUS_RW(rWops("BLUE_POWER"), 1);
         image = SDL_LoadBMP_RW(rWops("BP"), 1);
-    } else if ((snake[1].length_ - MIN_LENGTH) == WIN_SCORE) {
+    } else {
         music_ = Mix_LoadMUS_RW(rWops("GREEN_POWER"), 1);
         image = SDL_LoadBMP_RW(rWops("GP"), 1);
     }
