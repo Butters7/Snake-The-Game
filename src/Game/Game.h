@@ -18,6 +18,7 @@ public:
     void start();
 
     Game() {
+        complexity_ = 0;
         is_hard_ = false;
         is_playing_ = true;
         countdown_ = nullptr;
@@ -82,6 +83,7 @@ private:
     BigFruit b_fruit;
     Fruit fruit;
     Block block;
+    size_t complexity_;
     bool is_playing_;
     bool is_hard_;
     Mix_Music *music_;

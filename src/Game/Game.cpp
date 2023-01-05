@@ -7,10 +7,11 @@ void Game::start() {
     fruit.cr = Point{RECT_X / 2 + 8, RECT_Y / 2 - 4};
     StartMenu sm;
     if (sm.isHard()) {
+        complexity_ = 5;
         is_hard_ = true;
         FRAME_RATE = 1000 / 40;
-    }
-    else
+
+    } else
         is_hard_ = false;
     if (sm.getNextStep()) {
         initSDLMixer();
@@ -96,25 +97,18 @@ void Game::initializeSDL() {
 void Game::quit() {
     Mix_FreeMusic(music_);
     music_ = nullptr;
-
     Mix_FreeChunk(isItMe_);
     isItMe_ = nullptr;
-
     Mix_FreeChunk(countdown_);
     countdown_ = nullptr;
-
     Mix_FreeChunk(lose_);
     lose_ = nullptr;
-
     Mix_FreeChunk(eating_);
     eating_ = nullptr;
-
     SDL_DestroyRenderer(renderer_);
     renderer_ = nullptr;
-
     SDL_DestroyWindow(window_);
     window_ = nullptr;
-
     SDL_FreeSurface(icon_);
     icon_ = nullptr;
 
@@ -256,9 +250,10 @@ void Game::clickHandler() {
 void Game::updateWindowTitle() {
     do {
         std::string title =
-                "Snake. Blue: " + std::to_string(snake[0].length_ - MIN_LENGTH) + "/" + std::to_string(WIN_SCORE) +
+                "Snake. Blue: " + std::to_string(snake[0].length_ - MIN_LENGTH) + "/" +
+                std::to_string(WIN_SCORE - complexity_) +
                 ". Green: " +
-                std::to_string(snake[1].length_ - MIN_LENGTH) + "/" + std::to_string(WIN_SCORE) +
+                std::to_string(snake[1].length_ - MIN_LENGTH) + "/" + std::to_string(WIN_SCORE - complexity_) +
                 ". FPS: " + std::to_string(SPEED);
         SDL_SetWindowTitle(window_, title.c_str());
         SDL_Delay(250);
@@ -348,7 +343,8 @@ void Game::spawnFruit() {
 }
 
 bool Game::winner() {
-    if ((snake[0].length_ - MIN_LENGTH) >= WIN_SCORE || (snake[1].length_ - MIN_LENGTH) >= WIN_SCORE) {
+    if ((snake[0].length_ - MIN_LENGTH) >= (WIN_SCORE - complexity_) ||
+        (snake[1].length_ - MIN_LENGTH) >= (WIN_SCORE - complexity_)) {
         return true;
     }
     return false;

@@ -2,8 +2,8 @@
 
 static int SPEED = 20;
 static int FRAME_RATE = 1000 / SPEED;
-static const int MIN_LENGTH = 2;
 static const int WIN_SCORE = 20;
+static const int MIN_LENGTH = 2;
 static const int SCREEN_WIDTH = 640;
 static const int SCREEN_HEIGHT = 640;
 static const int GRID_WIDTH = 20;
